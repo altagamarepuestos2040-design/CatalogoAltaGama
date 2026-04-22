@@ -1047,6 +1047,8 @@ function getImgSrc(marca, id, imgNum){
     return base + 'Textar/' + id + '.png';
   } else if(marca === 'BOGAP'){
     return base + 'Bogap/' + id + '.jpg';
+  } else if(marca === 'KS' || marca === 'PIERBURG' || marca === 'TRW Engine Components'){
+    return base + 'KS Pierburg TRW/' + id + '.jpg';
   } else {
     return base + 'Febi/' + id + '_img' + (imgNum||1) + '.jpg';
   }
@@ -1059,7 +1061,7 @@ function makeCard(p){
   div.className="card";
   div.setAttribute("data-id", p.id);
   var imgId=p.id.toString();
-  var imgSrc=(function(){ try{ var s=JSON.parse(localStorage.getItem('rag_catalogo_edits_v1')||'{}'); if(s[imgId]&&s[imgId].img) return s[imgId].img; }catch(e){} return getImgSrc(p.marca, imgId, 1); })();
+  var imgSrc=(function(){ try{ var s=JSON.parse(localStorage.getItem('rag_catalogo_edits_v1')||'{}'); if(s[imgId]&&s[imgId].img) return s[imgId].img; }catch(e){} if(p.img) return p.img; return getImgSrc(p.marca, imgId, 1); })();
   var esFav = clienteActivo ? getFavs().has(p.id) : false;
   div.style.position='relative';
   div.innerHTML=
@@ -1288,6 +1290,8 @@ function openModal(id){
   var imgList = [];
   if(p.marca === 'TEXTAR'){
     imgList.push(getImgSrc('TEXTAR', imgIdM, 1));
+  } else if(p.marca === 'KS' || p.marca === 'PIERBURG' || p.marca === 'TRW Engine Components'){
+    imgList.push(p.img || getImgSrc(p.marca, imgIdM, 1));
   } else {
     // Febi/BP: probar img1 a img6, se detectan on error en el DOM
     for(var gi=1;gi<=6;gi++){
@@ -1542,7 +1546,7 @@ function cardImgFallback(el, imgId, baseIdx, imgNum){
   var marca = el.getAttribute('data-marca') || 'Febi';
   var nextBase = baseIdx;
   var nextNum = imgNum;
-  if(marca === 'BOGAP'){
+  if(marca === 'BOGAP' || marca === 'KS' || marca === 'PIERBURG' || marca === 'TRW Engine Components'){
     nextBase = baseIdx + 1;
   } else if(marca === 'TEXTAR'){
     nextBase = baseIdx + 1;
@@ -2993,6 +2997,7 @@ function canSeePrices(){
 }
 
 function cartItemImgSrc(p){
+  if(p.img) return p.img;
   return getImgSrc(p.marca, p.id.toString(), 1);
 }
 
