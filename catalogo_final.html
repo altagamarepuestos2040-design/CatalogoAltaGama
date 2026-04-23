@@ -1302,6 +1302,7 @@ function openModal(id){
     imgList.push(getImgSrc('TEXTAR', imgIdM, 1));
   } else if(p.marca === 'KS' || p.marca === 'PIERBURG' || p.marca === 'TRW Engine Components'){
     imgList.push(p.img || getImgSrc(p.marca, imgIdM, 1));
+    if(p.img2) imgList.push(p.img2);
   } else {
     // Febi/BP: probar img1 a img6, se detectan on error en el DOM
     for(var gi=1;gi<=6;gi++){
