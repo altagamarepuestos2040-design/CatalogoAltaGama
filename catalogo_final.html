@@ -75,6 +75,10 @@ select:focus{border-color:#CC0000}
 .btextar{background:#FFFBEB;color:#B45309;border-color:#FDE68A}
 .bkit{background:#F0FDF4;color:#15803D;border-color:#BBF7D0}
 .bpieza{background:#F1F5F9;color:#64748B;border-color:#CBD5E1}
+.bno-sum{background:#FEF2F2;color:#B91C1C;border-color:#FECACA;font-size:9px}
+.breemplazo{background:#FFFBEB;color:#B45309;border-color:#FDE68A;font-size:9px}
+.bminqty{background:#F0F9FF;color:#0369A1;border-color:#BAE6FD;font-size:9px}
+.ccolocacion{font-size:10px;color:#6B7280;margin-top:3px;line-height:1.4;border-left:2px solid #E5E7EB;padding-left:6px}
 .cdesc{font-size:13px;font-weight:600;color:#374151;line-height:1.4;margin-bottom:10px;min-height:36px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cmeta{display:flex;justify-content:space-between;align-items:center}
 .ccat{font-size:11px;color:#9CA3AF}
@@ -1076,6 +1080,9 @@ function makeCard(p){
     (p.tipo==="Kit completo"?'<span class="badge bkit">Kit</span>':"")+
     '</div></div>'+
     '<div class="cdesc">'+esc(p.desc)+'</div>'+
+    (p.colocacion?'<div class="ccolocacion">'+esc(p.colocacion)+'</div>':'')+
+    (p.no_suministra&&!p.reemplazado_por?'<div style="margin-top:4px"><span class="badge bno-sum">No se suministra</span></div>':'')+
+    (p.reemplazado_por?'<div style="margin-top:4px"><span class="badge breemplazo">Reemplazado por: '+esc(p.reemplazado_por)+'</span></div>':'')+
     '<div class="cmeta">'+
     '<span class="ccat">'+(ICONS[p.cat]||"")+" "+esc(p.cat)+'</span>'+
     '<span class="cfabs">'+f3+'</span>'+
@@ -1089,14 +1096,17 @@ function makeCard(p){
      var reventa=r.reventa;var mgReventa=r.mgReventa;
      var fmtCompra=final>0?('$ '+final.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
      var fmtReventa=reventa>0?('$ '+reventa.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
+     var minQ=p.min_qty||1;
      var qid='qty-'+esc(p.id).replace(/[^a-z0-9]/gi,'_');
+     var minQtyBadge=minQ>1?'<span class="badge bminqty" style="margin-left:4px">x'+minQ+' u.</span>':'';
      var btnCart='<div class="card-qty-row" onclick="event.stopPropagation()">'+
-       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\',-1)" title="Menos">&#8722;</button>'+
-       '<input class="card-qty-input" id="'+qid+'" type="number" min="1" max="999" value="1" onclick="event.stopPropagation()">'+
-       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\',1)" title="M\u00e1s">&#43;</button>'+
+       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\','+-minQ+')" title="Menos">&#8722;</button>'+
+       '<input class="card-qty-input" id="'+qid+'" type="number" min="'+minQ+'" max="999" value="'+minQ+'" data-min="'+minQ+'" onclick="event.stopPropagation()">'+
+       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\','+minQ+')" title="M\u00e1s">&#43;</button>'+
        '<div class="btn-add-cart-wrap">'+
-         '<button class="btn-add-cart" data-cart-id="'+esc(p.id)+'" onclick="event.stopPropagation();agregarAlCarrito(\x27'+esc(p.id)+'\x27,+document.getElementById(\x27'+qid+'\x27).value||1)">&#128722; Agregar</button>'+
+         '<button class="btn-add-cart" data-cart-id="'+esc(p.id)+'" onclick="event.stopPropagation();agregarAlCarrito(\x27'+esc(p.id)+'\x27,+document.getElementById(\x27'+qid+'\x27).value||'+minQ+')">&#128722; Agregar</button>'+
        '</div>'+
+       minQtyBadge+
      '</div>';
      var priceBlock='';
      if(fmtReventa){
@@ -3004,13 +3014,23 @@ function cartItemImgSrc(p){
 function cardQtyChange(inputId, delta){
   var el = document.getElementById(inputId);
   if(!el) return;
-  var v = Math.max(1, Math.min(999, (parseInt(el.value)||1) + delta));
+  var minQ = parseInt(el.getAttribute('data-min'))||1;
+  var cur = parseInt(el.value)||minQ;
+  var v = cur + delta;
+  if(v < minQ) v = minQ;
+  // snap to multiple of minQ
+  v = Math.round(v / minQ) * minQ;
+  if(v < minQ) v = minQ;
+  if(v > 999) v = Math.floor(999/minQ)*minQ;
   el.value = v;
 }
 
 function agregarAlCarrito(id, qty){
   if(!clienteActivo){ abrirLoginCliente(); return; }
-  var cantidad = Math.max(1, parseInt(qty)||1);
+  var art0=null; for(var i=0;i<DATA.length;i++){ if(DATA[i].id===id){ art0=DATA[i]; break; } }
+  var minQ=(art0&&art0.min_qty)||1;
+  var cantidad = Math.max(minQ, parseInt(qty)||minQ);
+  if(minQ>1) cantidad = Math.round(cantidad/minQ)*minQ;
   var art = null;
   for(var i=0;i<DATA.length;i++){ if(DATA[i].id===id){ art=DATA[i]; break; } }
   if(!art) return;
