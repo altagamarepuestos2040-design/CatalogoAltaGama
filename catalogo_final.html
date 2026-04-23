@@ -37,6 +37,17 @@ h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:
 
 .search-wrap{position:relative;margin-top:14px}
 #sb{width:100%;padding:12px 44px;background:#fff;border:2px solid transparent;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:#1A1A1A;outline:none;transition:border-color .2s}
+@media(max-width:600px){
+  .header-top{padding:10px 12px 10px}
+  h1{font-size:20px;margin-bottom:2px}
+  .hsub{font-size:11px}
+  .firma-row{margin-bottom:8px}
+  .brand-logos{gap:6px}
+  .brand-pill{padding:4px 9px;font-size:10px}
+  .search-wrap{margin-top:8px}
+  #sb{padding:9px 36px;font-size:13px}
+  .firma-name{font-size:18px}
+}
 #sb:focus{border-color:#CC0000}
 #sb::placeholder{color:#9CA3AF}
 .sicon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9CA3AF;pointer-events:none;font-size:15px}
@@ -46,11 +57,21 @@ h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:
 .filters{background:#1A1A1A;padding:10px 24px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .finner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .fgroup{display:flex;align-items:center;gap:8px}
+@media(max-width:600px){
+  .filters{padding:8px 10px}
+  .finner{gap:6px}
+  .fgroup{flex:1 1 calc(50% - 6px);min-width:0}
+  .fgroup select{width:100%;font-size:12px}
+  .flabel{font-size:10px}
+  .fdiv{display:none}
+}
 .flabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9CA3AF;white-space:nowrap}
 select{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:1px solid #374151;border-radius:8px;padding:6px 10px;background:#374151;outline:none;cursor:pointer;color:#F9FAFB}
 select:focus{border-color:#CC0000}
 .fdiv{width:1px;height:22px;background:#374151;flex-shrink:0}
-.cats{display:flex;gap:5px;flex-wrap:wrap}
+.cats{display:flex;gap:5px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+@media(max-width:600px){.cats{flex-wrap:nowrap;width:100%}}
 .cbtn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;border:1px solid #374151;cursor:pointer;background:transparent;color:#9CA3AF;white-space:nowrap;transition:all .15s}
 .cbtn:hover{background:#374151;color:#fff}
 .cbtn.on{background:#CC0000;color:#fff;border-color:#CC0000}
