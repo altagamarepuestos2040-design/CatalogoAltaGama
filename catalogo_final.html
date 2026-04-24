@@ -37,17 +37,6 @@ h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:
 
 .search-wrap{position:relative;margin-top:14px}
 #sb{width:100%;padding:12px 44px;background:#fff;border:2px solid transparent;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:#1A1A1A;outline:none;transition:border-color .2s}
-@media(max-width:600px){
-  .header-top{padding:10px 12px 10px}
-  h1{font-size:20px;margin-bottom:2px}
-  .hsub{font-size:11px}
-  .firma-row{margin-bottom:8px}
-  .brand-logos{gap:6px}
-  .brand-pill{padding:4px 9px;font-size:10px}
-  .search-wrap{margin-top:8px}
-  #sb{padding:9px 36px;font-size:13px}
-  .firma-name{font-size:18px}
-}
 #sb:focus{border-color:#CC0000}
 #sb::placeholder{color:#9CA3AF}
 .sicon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9CA3AF;pointer-events:none;font-size:15px}
@@ -57,27 +46,11 @@ h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:
 .filters{background:#1A1A1A;padding:10px 24px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .finner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .fgroup{display:flex;align-items:center;gap:8px}
-@media(max-width:600px){
-  .filters{padding:8px 10px}
-  .finner{gap:6px}
-  .fgroup{flex:1 1 calc(50% - 6px);min-width:0;flex-direction:column;align-items:flex-start;gap:3px}
-  .fgroup select{width:100%;font-size:12px;padding:5px 8px}
-  .flabel{font-size:9px}
-  .fdiv{display:none}
-  #ftipo{display:none}
-  .fgroup:has(#ftipo){display:none}
-}
 .flabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9CA3AF;white-space:nowrap}
 select{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border:1px solid #374151;border-radius:8px;padding:6px 10px;background:#374151;outline:none;cursor:pointer;color:#F9FAFB}
 select:focus{border-color:#CC0000}
 .fdiv{width:1px;height:22px;background:#374151;flex-shrink:0}
-.cats{display:flex;gap:5px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.cats::-webkit-scrollbar{display:none}
-@media(max-width:600px){
-  .cats{flex-wrap:nowrap;width:100%;padding-bottom:2px}
-  .cats-wrap{position:relative}
-  .cats-wrap::after{content:'';position:absolute;right:0;top:0;bottom:2px;width:32px;background:linear-gradient(to right,transparent,#1A1A1A);pointer-events:none}
-}
+.cats{display:flex;gap:5px;flex-wrap:wrap}
 .cbtn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;border:1px solid #374151;cursor:pointer;background:transparent;color:#9CA3AF;white-space:nowrap;transition:all .15s}
 .cbtn:hover{background:#374151;color:#fff}
 .cbtn.on{background:#CC0000;color:#fff;border-color:#CC0000}
@@ -102,10 +75,6 @@ select:focus{border-color:#CC0000}
 .btextar{background:#FFFBEB;color:#B45309;border-color:#FDE68A}
 .bkit{background:#F0FDF4;color:#15803D;border-color:#BBF7D0}
 .bpieza{background:#F1F5F9;color:#64748B;border-color:#CBD5E1}
-.bno-sum{background:#FEF2F2;color:#B91C1C;border-color:#FECACA;font-size:9px}
-.breemplazo{background:#FFFBEB;color:#B45309;border-color:#FDE68A;font-size:9px}
-.bminqty{background:#F0F9FF;color:#0369A1;border-color:#BAE6FD;font-size:9px}
-.ccolocacion{font-size:10px;color:#6B7280;margin-top:3px;line-height:1.4;border-left:2px solid #E5E7EB;padding-left:6px}
 .cdesc{font-size:13px;font-weight:600;color:#374151;line-height:1.4;margin-bottom:10px;min-height:36px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .cmeta{display:flex;justify-content:space-between;align-items:center}
 .ccat{font-size:11px;color:#9CA3AF}
@@ -158,6 +127,13 @@ select:focus{border-color:#CC0000}
 .cimg-wrap img{max-height:140px;max-width:90%;object-fit:contain;transition:transform .2s}
 .card:hover .cimg-wrap img{transform:scale(1.05)}
 .cimg-wrap .no-img{font-size:36px;color:#E5E7EB}
+.juego-imgs{width:100%;height:160px;display:flex;border-bottom:1px solid #F1F5F9;background:#F8FAFC}
+.juego-img-side{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.juego-img-side:first-child{border-right:1px solid #E5E7EB}
+.juego-img-side img{max-height:120px;max-width:90%;object-fit:contain}
+.juego-lado-tag{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;background:rgba(0,0,0,.55);color:#fff;padding:1px 6px;border-radius:8px;white-space:nowrap}
+.juego-nums{font-size:11px;color:#6B7280;margin-top:3px}
+.juego-badge{display:inline-block;font-size:10px;font-weight:700;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;border-radius:6px;padding:1px 7px;margin-top:4px}
 .mimg-wrap{width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:#F8FAFC;border-radius:10px;overflow:hidden;margin-bottom:8px;position:relative}
 .mimg-wrap img{max-height:200px;max-width:90%;object-fit:contain}
 /* IMAGE GALLERY */
@@ -919,23 +895,19 @@ select:focus{border-color:#CC0000}
       </select>
     </div>
     <div class="fdiv"></div>
-    <div class="cats-wrap" style="flex:1 1 100%;min-width:0">
     <div class="cats" id="cats">
       <button class="cbtn on" data-c="">Todas</button>
       <button class="cbtn" data-c="Motor">Motor</button>
-      <button class="cbtn" data-c="Mantenimiento">Mantenimiento</button>
       <button class="cbtn" data-c="Suspensión">Suspensión</button>
-      <button class="cbtn" data-c="Pastillas de Freno">Pastillas</button>
       <button class="cbtn" data-c="Frenos">Frenos</button>
-      <button class="cbtn" data-c="Distribución / Correas">Distribución</button>
-      <button class="cbtn" data-c="Dirección">Dirección</button>
-      <button class="cbtn" data-c="Electrónica">Electrónica</button>
-      <button class="cbtn" data-c="Embrague">Embrague</button>
       <button class="cbtn" data-c="Cambio">Cambio</button>
-      <button class="cbtn" data-c="Carrocería">Carrocería</button>
-      <button class="cbtn" data-c="Kits">Kits</button>
+      <button class="cbtn" data-c="Dirección">Dirección</button>
+      <button class="cbtn" data-c="Embrague">Embrague</button>
     </div>
-    </div>
+    <a href="https://wa.me/5491162770520" target="_blank" rel="noopener" title="Contactanos por WhatsApp" style="margin-left:auto;display:flex;align-items:center;gap:7px;background:#25D366;color:#fff;text-decoration:none;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="18" height="18" fill="#fff"><path d="M16 2C8.27 2 2 8.27 2 16c0 2.48.67 4.8 1.84 6.8L2 30l7.38-1.82A13.94 13.94 0 0016 30c7.73 0 14-6.27 14-14S23.73 2 16 2zm6.32 19.88c-.35-.17-2.05-1.01-2.37-1.13-.32-.11-.55-.17-.78.17-.23.35-.88 1.13-1.08 1.36-.2.23-.4.26-.74.09-.35-.17-1.47-.54-2.8-1.73a10.54 10.54 0 01-1.94-2.42c-.2-.35-.02-.53.15-.7.15-.15.35-.4.52-.6.17-.2.23-.35.35-.58.11-.23.06-.43-.03-.6-.09-.17-.78-1.88-1.07-2.57-.28-.68-.57-.58-.78-.59h-.67c-.23 0-.6.09-.92.43-.32.35-1.2 1.17-1.2 2.86s1.23 3.32 1.4 3.55c.17.23 2.42 3.7 5.87 5.19.82.35 1.46.56 1.96.72.82.26 1.57.22 2.16.13.66-.1 2.05-.84 2.34-1.65.29-.8.29-1.5.2-1.65-.08-.14-.3-.23-.65-.4z"/></svg>
+      WhatsApp
+    </a>
   </div>
 </div>
 
@@ -1086,8 +1058,6 @@ function getImgSrc(marca, id, imgNum){
     return base + 'Textar/' + id + '.png';
   } else if(marca === 'BOGAP'){
     return base + 'Bogap/' + id + '.jpg';
-  } else if(marca === 'KS' || marca === 'PIERBURG' || marca === 'TRW Engine Components'){
-    return base + 'KS Pierburg TRW/' + id + '.jpg';
   } else {
     return base + 'Febi/' + id + '_img' + (imgNum||1) + '.jpg';
   }
@@ -1095,12 +1065,67 @@ function getImgSrc(marca, id, imgNum){
 
 function makeCard(p){
   var ac=p.marca==="Febi"?"#CC0000":p.marca==="TEXTAR"?"#FFCC00":"#0EA5E9";
+  // ── Tarjeta combinada (juego izq/der) ────────────────────────────────────
+  if(p.juego_principal && p.juego){
+    var p2 = null;
+    for(var _i=0;_i<DATA.length;_i++){ if(DATA[_i].id===p.juego){ p2=DATA[_i]; break; } }
+    if(p2){
+      var ac2=p.marca==="Febi"?"#CC0000":p.marca==="TEXTAR"?"#FFCC00":"#0EA5E9";
+      var div2=document.createElement("div");
+      div2.className="card";
+      div2.setAttribute("data-id", p.id);
+      div2.setAttribute("data-juego-id", p2.id);
+      var img1=getImgSrc(p.marca, p.id.toString(), 1);
+      var img2=getImgSrc(p2.marca, p2.id.toString(), 1);
+      var lado1=p.lado||''; var lado2=p2.lado||'';
+      if(!lado1 && !lado2){ lado1='A'; lado2='B'; }
+      var oes1=p.oe ? Object.values(p.oe).join(' | ') : '';
+      var oes2=p2.oe ? Object.values(p2.oe).join(' | ') : '';
+      var r1=getPrecioConDescuento(p.id); var r2=getPrecioConDescuento(p2.id);
+      var precioTotal=(r1.final||0)+(r2.final||0);
+      var fmtTotal=precioTotal>0?('$ '+precioTotal.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
+      div2.innerHTML=
+        '<div class="cbar" style="background:'+ac2+'"></div>'+
+        '<div class="juego-imgs">'+
+          '<div class="juego-img-side">'+
+            '<img src="'+img1+'" alt="'+esc(p.id)+'" onerror="this.src=\'\'">'+
+            (lado1?'<span class="juego-lado-tag">'+esc(lado1)+'</span>':'')+
+          '</div>'+
+          '<div class="juego-img-side">'+
+            '<img src="'+img2+'" alt="'+esc(p2.id)+'" onerror="this.src=\'\'">'+
+            (lado2?'<span class="juego-lado-tag">'+esc(lado2)+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="cbody">'+
+          '<div class="ctop">'+
+            '<div>'+
+              '<span class="cnum" style="color:'+ac2+'">'+esc(p.id)+'</span>'+
+              '<div class="juego-nums">'+esc(p2.id)+'</div>'+
+            '</div>'+
+            '<div class="badges"><span class="badge '+(p.marca==="Febi"?"bfebi":p.marca==="TEXTAR"?"btextar":"bbp")+'">'+esc(p.marca)+'</span></div>'+
+          '</div>'+
+          '<div class="cdesc">'+esc(p.desc)+'</div>'+
+          (oes1||oes2?'<div style="font-size:10px;color:#9CA3AF;margin-top:3px;line-height:1.4">'+
+            (oes1?'<div>'+esc(oes1)+'</div>':'')+
+            (oes2?'<div>'+esc(oes2)+'</div>':'')+
+          '</div>':'')+
+          '<span class="juego-badge">Juego IZQ + DER</span>'+
+          (fmtTotal?'<div class="cprice"><span class="cprice-venta" style="color:#059669">'+fmtTotal+'</span><span style="font-size:10px;color:#9CA3AF;margin-left:4px">c/IVA (par)</span></div>':'<div class="cprice sin-precio">Sin precio</div>')+
+          '<div style="margin-top:8px">'+
+            '<button class="btn-add-cart" onclick="event.stopPropagation();agregarJuego(\''+esc(p.id)+'\',\''+esc(p2.id)+'\')">&#128722; Agregar par</button>'+
+          '</div>'+
+        '</div>';
+      div2.addEventListener("click", function(){ openModal(p.id); });
+      return div2;
+    }
+  }
+  // ── Tarjeta normal ────────────────────────────────────────────────────────
   var f3=p.fabs.split(", ").slice(0,3).join(" &middot; ");
   var div=document.createElement("div");
   div.className="card";
   div.setAttribute("data-id", p.id);
   var imgId=p.id.toString();
-  var imgSrc=(function(){ try{ var s=JSON.parse(localStorage.getItem('rag_catalogo_edits_v1')||'{}'); if(s[imgId]&&s[imgId].img) return s[imgId].img; }catch(e){} if(p.img) return p.img; return getImgSrc(p.marca, imgId, 1); })();
+  var imgSrc=(function(){ try{ var s=JSON.parse(localStorage.getItem('rag_catalogo_edits_v1')||'{}'); if(s[imgId]&&s[imgId].img) return s[imgId].img; }catch(e){} return getImgSrc(p.marca, imgId, 1); })();
   var esFav = clienteActivo ? getFavs().has(p.id) : false;
   div.style.position='relative';
   div.innerHTML=
@@ -1115,9 +1140,6 @@ function makeCard(p){
     (p.tipo==="Kit completo"?'<span class="badge bkit">Kit</span>':"")+
     '</div></div>'+
     '<div class="cdesc">'+esc(p.desc)+'</div>'+
-    (p.colocacion?'<div class="ccolocacion">'+esc(p.colocacion)+'</div>':'')+
-    (p.no_suministra&&!p.reemplazado_por?'<div style="margin-top:4px"><span class="badge bno-sum">No se suministra</span></div>':'')+
-    (p.reemplazado_por?'<div style="margin-top:4px"><span class="badge breemplazo">Reemplazado por: '+esc(p.reemplazado_por)+'</span></div>':'')+
     '<div class="cmeta">'+
     '<span class="ccat">'+(ICONS[p.cat]||"")+" "+esc(p.cat)+'</span>'+
     '<span class="cfabs">'+f3+'</span>'+
@@ -1131,18 +1153,22 @@ function makeCard(p){
      var reventa=r.reventa;var mgReventa=r.mgReventa;
      var fmtCompra=final>0?('$ '+final.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
      var fmtReventa=reventa>0?('$ '+reventa.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
-     var minQ=p.min_qty||1;
      var qid='qty-'+esc(p.id).replace(/[^a-z0-9]/gi,'_');
-     var minQtyBadge=minQ>1?'<span class="badge bminqty" style="margin-left:4px">x'+minQ+' u.</span>':'';
+     var mult=p.mult||1;
+     var juego=p.juego||'';
+     var addFn=juego
+       ? 'event.stopPropagation();agregarJuego(\x27'+esc(p.id)+'\x27,\x27'+esc(juego)+'\x27)'
+       : 'event.stopPropagation();agregarAlCarrito(\x27'+esc(p.id)+'\x27,+document.getElementById(\x27'+qid+'\x27).value||'+mult+')';
      var btnCart='<div class="card-qty-row" onclick="event.stopPropagation()">'+
-       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\','+-minQ+')" title="Menos">&#8722;</button>'+
-       '<input class="card-qty-input" id="'+qid+'" type="number" min="'+minQ+'" max="999" value="'+minQ+'" data-min="'+minQ+'" onclick="event.stopPropagation()">'+
-       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\','+minQ+')" title="M\u00e1s">&#43;</button>'+
+       (juego?'':('<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\','+(-mult)+')" title="Menos">&#8722;</button>'+
+       '<input class="card-qty-input" id="'+qid+'" type="number" min="'+mult+'" max="999" value="'+mult+'" step="'+mult+'" onclick="event.stopPropagation()">'+
+       '<button class="card-qty-btn" onclick="cardQtyChange(\''+qid+'\','+mult+')" title="M\u00e1s">&#43;</button>'))+
        '<div class="btn-add-cart-wrap">'+
-         '<button class="btn-add-cart" data-cart-id="'+esc(p.id)+'" onclick="event.stopPropagation();agregarAlCarrito(\x27'+esc(p.id)+'\x27,+document.getElementById(\x27'+qid+'\x27).value||'+minQ+')">&#128722; Agregar</button>'+
+         '<button class="btn-add-cart" data-cart-id="'+esc(p.id)+'" onclick="'+addFn+'">&#128722; Agregar</button>'+
        '</div>'+
-       minQtyBadge+
-     '</div>';
+     '</div>'+
+     (juego?'<div style="font-size:11px;color:#6B7280;text-align:center;margin-top:2px">Se vende en juego &#x2194; '+esc(juego)+'</div>':'')+
+     (mult>1?'<div style="font-size:11px;color:#6B7280;text-align:center;margin-top:2px">Se vende x'+mult+'</div>':'');
      var priceBlock='';
      if(fmtReventa){
        priceBlock='<div class="cprice"><span class="cprice-venta" style="color:#059669">'+fmtReventa+'</span></div>';
@@ -1173,7 +1199,10 @@ function render(){
   } else {
     em.style.display="none";
     var frag=document.createDocumentFragment();
-    for(var i=0;i<sl.length;i++) frag.appendChild(makeCard(sl[i]));
+    for(var i=0;i<sl.length;i++){
+      if(sl[i].juego_secundario) continue;
+      frag.appendChild(makeCard(sl[i]));
+    }
     gr.appendChild(frag);
   }
 
@@ -1335,9 +1364,6 @@ function openModal(id){
   var imgList = [];
   if(p.marca === 'TEXTAR'){
     imgList.push(getImgSrc('TEXTAR', imgIdM, 1));
-  } else if(p.marca === 'KS' || p.marca === 'PIERBURG' || p.marca === 'TRW Engine Components'){
-    imgList.push(p.img || getImgSrc(p.marca, imgIdM, 1));
-    if(p.img2) imgList.push(p.img2);
   } else {
     // Febi/BP: probar img1 a img6, se detectan on error en el DOM
     for(var gi=1;gi<=6;gi++){
@@ -1369,6 +1395,31 @@ function openModal(id){
   window._mgIdx = 0;
   window._mgLoaded = []; // índices que cargaron OK
 
+  // ── Header extra para juego ────────────────────────────────────────────
+  var juegoHeaderH = '';
+  var juegoAgregarH = '';
+  if(p.juego_principal && p.juego){
+    var p2j=null; for(var _j=0;_j<DATA.length;_j++){ if(DATA[_j].id===p.juego){p2j=DATA[_j];break;} }
+    if(p2j){
+      var oes2j = p2j.oe ? Object.values(p2j.oe).join(' | ') : '';
+      var r1j=getPrecioConDescuento(p.id); var r2j=getPrecioConDescuento(p2j.id);
+      var totalj=(r1j.final||0)+(r2j.final||0);
+      var fmtTotalj=totalj>0?('$ '+totalj.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
+      juegoHeaderH =
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">'+
+          '<span class="juego-badge">Juego IZQ + DER</span>'+
+          '<span style="font-size:12px;color:#6B7280">Par: <b>'+esc(p.id)+'</b> + <b>'+esc(p2j.id)+'</b></span>'+
+        '</div>'+
+        (oes2j?'<div style="font-size:11px;color:#9CA3AF;margin-top:4px">OE par: '+esc(oes2j)+'</div>':'');
+      juegoAgregarH = fmtTotalj
+        ? '<div style="margin:12px 0 4px;padding:12px;background:#F0FDF4;border-radius:8px;text-align:center">'+
+            '<div style="font-size:13px;color:#6B7280;margin-bottom:4px">Precio del par (c/IVA)</div>'+
+            '<div style="font-size:20px;font-weight:900;color:#16A34A">'+fmtTotalj+'</div>'+
+            '<button class="btn-add-cart" style="margin-top:8px;width:100%" onclick="agregarJuego(\''+esc(p.id)+'\',\''+esc(p2j.id)+'\');cerrarModal()">&#128722; Agregar par al carrito</button>'+
+          '</div>'
+        : '';
+    }
+  }
   mc.innerHTML=
     '<div class="mhead">'+
     '<div class="mhtop"><div>'+
@@ -1381,11 +1432,13 @@ function openModal(id){
     '</div>'+
     '<div class="mdesc">'+esc(p.desc)+'</div>'+
     (p.lado?'<div class="mlado">&#128205; '+esc(p.lado)+'</div>':"")+
+    juegoHeaderH+
     '</div>'+
     '<div class="mbody">'+
     galleryH+
     '<div><span class="cattag">'+(ICONS[p.cat]||"")+" "+esc(p.cat)+'</span></div>'+
     propsH+oeH+relH+compatH+
+    juegoAgregarH+
     priceBoxH+
     '<a href="'+esc(p.url)+'" target="_blank" class="cta" style="background:'+ac+'">Ver ficha t&eacute;cnica completa &#8594;</a>'+
     '</div>';
@@ -1592,7 +1645,7 @@ function cardImgFallback(el, imgId, baseIdx, imgNum){
   var marca = el.getAttribute('data-marca') || 'Febi';
   var nextBase = baseIdx;
   var nextNum = imgNum;
-  if(marca === 'BOGAP' || marca === 'KS' || marca === 'PIERBURG' || marca === 'TRW Engine Components'){
+  if(marca === 'BOGAP'){
     nextBase = baseIdx + 1;
   } else if(marca === 'TEXTAR'){
     nextBase = baseIdx + 1;
@@ -1641,9 +1694,10 @@ window.addEventListener("DOMContentLoaded", function(){
   var gr = document.getElementById('gr');
   if(gr) gr.innerHTML = '<div style="text-align:center;padding:60px;color:#888;font-size:15px">&#9881; Cargando catálogo...</div>';
 
+  var _vc = '?v=' + Date.now();
   Promise.all([
-    fetch('articulos.json').then(function(r){ return r.json(); }),
-    fetch('precios.json').then(function(r){ return r.json(); })
+    fetch('articulos.json' + _vc).then(function(r){ return r.json(); }),
+    fetch('precios.json' + _vc).then(function(r){ return r.json(); })
   ]).then(function(results){
     DATA = results[0];
     PRECIOS_BASE = results[1];
@@ -3043,32 +3097,29 @@ function canSeePrices(){
 }
 
 function cartItemImgSrc(p){
-  if(p.img) return p.img;
   return getImgSrc(p.marca, p.id.toString(), 1);
 }
 
 function cardQtyChange(inputId, delta){
   var el = document.getElementById(inputId);
   if(!el) return;
-  var minQ = parseInt(el.getAttribute('data-min'))||1;
-  var cur = parseInt(el.value)||minQ;
-  var v = cur + delta;
-  if(v < minQ) v = minQ;
-  // snap to multiple of minQ
-  v = Math.round(v / minQ) * minQ;
-  if(v < minQ) v = minQ;
-  if(v > 999) v = Math.floor(999/minQ)*minQ;
+  var min = parseInt(el.min)||1;
+  var v = Math.max(min, Math.min(999, (parseInt(el.value)||min) + delta));
   el.value = v;
+}
+
+function agregarJuego(id1, id2){
+  agregarAlCarrito(id1, 1);
+  agregarAlCarrito(id2, 1);
 }
 
 function agregarAlCarrito(id, qty){
   if(!clienteActivo){ abrirLoginCliente(); return; }
-  var art0=null; for(var i=0;i<DATA.length;i++){ if(DATA[i].id===id){ art0=DATA[i]; break; } }
-  var minQ=(art0&&art0.min_qty)||1;
-  var cantidad = Math.max(minQ, parseInt(qty)||minQ);
-  if(minQ>1) cantidad = Math.round(cantidad/minQ)*minQ;
   var art = null;
   for(var i=0;i<DATA.length;i++){ if(DATA[i].id===id){ art=DATA[i]; break; } }
+  var mult = (art&&art.mult)||1;
+  var cantidad = Math.max(mult, parseInt(qty)||mult);
+  if(mult>1) cantidad = Math.round(cantidad/mult)*mult;
   if(!art) return;
   var r = getPrecioConDescuento(id);
   if(!r.final || r.final<=0){ pmToast('Este producto no tiene precio asignado'); return; }
@@ -5668,6 +5719,7 @@ function ceGuardarEnArchivoManual(){
     </div>
   </div>
 </div>
+
 
 </body>
 </html>
