@@ -723,6 +723,53 @@ select:focus{border-color:#CC0000}
   transition:all .2s;margin-top:10px;margin-left:8px;
 }
 .dash-reject-btn:hover{ background:#FEE2E2; }
+
+/* ── RESPONSIVE MOBILE ──────────────────────────────────────────────────── */
+@media(max-width:640px){
+  /* Header */
+  .header-top{padding:12px 14px 10px}
+  .firma-row{flex-wrap:wrap;gap:8px}
+  .brand-logos{order:3;width:100%;display:flex;flex-wrap:wrap;gap:6px}
+  #client-header-area{order:2}
+  h1{font-size:20px}
+  .hsub{font-size:12px}
+  #sb{font-size:14px;padding:10px 38px}
+
+  /* Filtros */
+  .filters{padding:0}
+  .finner{padding:8px 10px;gap:8px;flex-wrap:wrap}
+  .fgroup{flex-wrap:wrap;gap:6px;width:100%}
+  #fmod,#fsub,#fmot{min-width:0;width:100%;max-width:100%}
+  .finner>a[href*="wa.me"]{order:99;margin-left:0;width:100%;justify-content:center;border-radius:8px;padding:8px}
+  .cbtn{font-size:11px;padding:5px 10px}
+
+  /* Grid */
+  .main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:8px}
+
+  /* Card */
+  .cimg-wrap{height:130px}
+  .juego-imgs{height:130px}
+  .cnum{font-size:14px}
+  .cdesc{font-size:12px;min-height:30px}
+  .cbody{padding:10px}
+
+  /* Modal */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:16px 16px 0 0;max-height:92vh;width:100%}
+  .mhead{padding:16px 16px}
+  .mbody{padding:14px 16px;gap:14px}
+  .mnum{font-size:20px}
+  .mdesc{font-size:14px}
+  .pgrid{grid-template-columns:1fr 1fr;gap:5px}
+
+  /* Carrito sidebar */
+  #cart-sidebar{width:100vw;right:-100vw}
+
+  /* Paginación */
+  .pag button{padding:7px 10px;font-size:12px}
+  .paginfo{font-size:12px}
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -733,7 +780,7 @@ select:focus{border-color:#CC0000}
     <div class="hinner">
       <div class="firma-row">
         <div>
-          <img src="logo_alta_gama.svg" alt="Alta Gama Autopartes Premium" style="height:54px;width:auto;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <img src="logo_alta_gama.jpg" alt="Alta Gama Autopartes Premium" style="height:54px;width:auto;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
           <div style="display:none"><div class="firma-name">Repuestos Alta Gama</div><div class="firma-sub">Distribuidores oficiales</div></div>
         </div>
         <div class="brand-logos">
