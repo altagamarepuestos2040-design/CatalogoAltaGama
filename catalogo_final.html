@@ -153,6 +153,12 @@ select:focus{border-color:#CC0000}
 .mgallery-thumb img{max-width:44px;max-height:44px;object-fit:contain}
 .mgallery-counter{position:absolute;bottom:8px;right:12px;background:rgba(0,0,0,.45);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;pointer-events:none}
 
+/* ZOOM overlay */
+#zoom-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#zoom-overlay.show{display:flex}
+#zoom-overlay img{max-width:95vw;max-height:95vh;object-fit:contain;border-radius:6px}
+.mgallery-main img{cursor:zoom-in}
+
 /* FOOTER */
 .footer{text-align:center;padding:24px;font-size:12px;color:#9CA3AF;border-top:1px solid #E5E7EB;margin-top:12px}
 .footer strong{color:#CC0000}
@@ -1028,6 +1034,34 @@ var DATA=[];
 
 function norm(s){return(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
 function normSearch(s){return norm(s).replace(/[\s\-\.]/g,"");}
+
+// \u2500\u2500 SIN\u00d3NIMOS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+var SYNONYM_GROUPS=[
+  ['amortiguador','suspension','shock'],
+  ['freno','pastilla','disco','zapata','abs','caliper','mordaza'],
+  ['correa','distribucion','distribucion','timing','kit distribucion'],
+  ['bomba agua','bomba de agua','refrigeracion','refrigerante','enfriamiento'],
+  ['embrague','clutch','kit embrague','disco embrague'],
+  ['rotula','articulacion','ball joint'],
+  ['bulon','tornillo','perno','fijacion','tensilock'],
+  ['sensor','sonda','temperatura'],
+  ['direccion','cremallera','columna','steering'],
+  ['junta','empaque','kit junta','sello'],
+  ['filtro aceite','filtro de aceite','filtro lubricante'],
+  ['filtro aire','filtro de aire'],
+  ['soporte','apoyo','silent block','silentblock','buje'],
+  ['cable freno','cable de freno','cable mano'],
+  ['kit','juego','set'],
+];
+function expandQuery(q){
+  var nq=norm(q), terms=[nq];
+  SYNONYM_GROUPS.forEach(function(g){
+    if(g.some(function(t){var nt=norm(t);return nq.indexOf(nt)>=0||nt.indexOf(nq)>=0;})){
+      g.forEach(function(t){var nt=norm(t);if(terms.indexOf(nt)<0)terms.push(nt);});
+    }
+  });
+  return terms;
+}
 function esc(s){
   var d=document.createElement("div");
   d.appendChild(document.createTextNode(String(s||"")));
@@ -1125,12 +1159,14 @@ function getFiltered(){
     }
     if(!q) return true;
     var qs=normSearch(curQ);
-    // Búsqueda flexible: ignora espacios/guiones en OE y en el ID
-    return norm(p.id).indexOf(q)>=0 || norm(p.desc).indexOf(q)>=0 ||
-           norm(p.fabs).indexOf(q)>=0 ||
-           normSearch(p.id).indexOf(qs)>=0 ||
+    var terms=expandQuery(curQ);
+    // Búsqueda por sinónimos + SKU/OE exacto
+    if(terms.some(function(t){
+      return norm(p.id).indexOf(t)>=0||norm(p.desc).indexOf(t)>=0||norm(p.fabs||'').indexOf(t)>=0;
+    })) return true;
+    return normSearch(p.id).indexOf(qs)>=0 ||
            Object.values(p.oe||{}).some(function(v){
-             return norm(v).indexOf(q)>=0 || normSearch(v).indexOf(qs)>=0;
+             return norm(v).indexOf(q)>=0||normSearch(v).indexOf(qs)>=0;
            });
   });
 }
@@ -1466,7 +1502,7 @@ function openModal(id){
   galleryH += '<div class="mgallery-main" id="mgallery-main">';
   if(imgList.length > 0){
     galleryH += '<button class="mgallery-nav prev" id="mg-prev" onclick="mgNav(-1)" disabled>&#8249;</button>';
-    galleryH += '<img id="mg-mainimg" src="'+imgList[0]+'" alt="'+esc(p.id)+'" onerror="mgImgError(this)" loading="lazy">';
+    galleryH += '<img id="mg-mainimg" src="'+imgList[0]+'" alt="'+esc(p.id)+'" onerror="mgImgError(this)" loading="lazy" onclick="openZoom(this.src)">';
     galleryH += '<button class="mgallery-nav next" id="mg-next" onclick="mgNav(1)"'+(imgList.length<=1?' disabled':'')+'>&#8250;</button>';
     galleryH += '<span class="mgallery-counter" id="mg-counter">1 / <span id="mg-total">?</span></span>';
   } else {
@@ -1611,10 +1647,18 @@ function mgNav(dir){
 }
 
 function mgImgError(el){
-  // Called if main image fails - should not happen after probing but just in case
   el.style.display='none';
 }
 
+function openZoom(src){
+  var ov=document.getElementById('zoom-overlay');
+  var img=document.getElementById('zoom-img');
+  img.src=src;
+  ov.classList.add('show');
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') document.getElementById('zoom-overlay').classList.remove('show');
+});
 
 // ============ AUTOCOMPLETE ============
 var acIdx = -1;
@@ -1819,7 +1863,7 @@ function iniciarCatalogo(){
   document.getElementById("sb").addEventListener("input",function(){
     curQ=this.value;
     document.getElementById("sc").style.display=curQ?"block":"none";
-    curPg=1; render();
+    curPg=1; saveSession(); render();
     buildAutocomplete(this.value);
   });
 
@@ -1860,7 +1904,7 @@ function iniciarCatalogo(){
 
   // El filtro de marca se maneja via onMarcaChange() en el atributo onchange del select
   // para poder también actualizar los dropdowns de modelo/submodelo/motor
-  document.getElementById("ftipo").addEventListener("change",function(){curTipo=this.value;curPg=1;render();});
+  document.getElementById("ftipo").addEventListener("change",function(){curTipo=this.value;curPg=1;saveSession();render();});
 
   document.getElementById("cats").addEventListener("click",function(e){
     var b=e.target.closest(".cbtn");
@@ -1868,13 +1912,59 @@ function iniciarCatalogo(){
     document.querySelectorAll(".cbtn").forEach(function(x){x.classList.remove("on");});
     b.classList.add("on");
     curCat=b.getAttribute("data-c");
-    curPg=1; render();
+    curPg=1; saveSession(); render();
   });
 
   var tc2=document.getElementById("tc2");
   if(tc2) tc2.textContent = DATA.length.toLocaleString("es-AR");
+
+  // Restaurar filtros de sesión anterior
+  restoreSession();
   render();
 } // fin iniciarCatalogo
+
+// ── MEMORIA DE SESIÓN ───────────────────────────────────────────────────────
+function saveSession(){
+  try{
+    sessionStorage.setItem('rag_filters', JSON.stringify({
+      q:curQ, cat:curCat, veh:curVeh, mod:curMod,
+      sub:curSub, mot:curMot, tipo:curTipo, marca:curMarcaRep
+    }));
+  }catch(e){}
+}
+function restoreSession(){
+  try{
+    var s = sessionStorage.getItem('rag_filters');
+    if(!s) return;
+    var f = JSON.parse(s);
+    if(f.q){
+      curQ=f.q;
+      var sb=document.getElementById('sb');
+      if(sb){ sb.value=f.q; document.getElementById('sc').style.display='block'; }
+    }
+    if(f.cat){
+      curCat=f.cat;
+      document.querySelectorAll('.cbtn').forEach(function(b){
+        b.classList.toggle('on', b.getAttribute('data-c')===f.cat);
+      });
+    }
+    if(f.marca){
+      curMarcaRep=f.marca;
+      var fm=document.getElementById('fmarca');
+      if(fm) fm.value=f.marca;
+    }
+    if(f.tipo){
+      curTipo=f.tipo;
+      var ft=document.getElementById('ftipo');
+      if(ft) ft.value=f.tipo;
+    }
+    if(f.veh){
+      curVeh=f.veh;
+      var fv=document.getElementById('fveh');
+      if(fv){ fv.value=f.veh; onMarcaChange(f.veh, f.mod, f.sub, f.mot); }
+    }
+  }catch(e){}
+}
 
 
 function onMarcaRepChange(v){
@@ -1941,7 +2031,7 @@ function onMarcaChange(val){
   } else {
     fmod.style.display = "none";
   }
-  render();
+  saveSession(); render();
 }
 
 function onModeloChange(val){
@@ -5808,6 +5898,11 @@ function ceGuardarEnArchivoManual(){
       </div>
     </div>
   </div>
+</div>
+
+<!-- Zoom overlay -->
+<div id="zoom-overlay" onclick="this.classList.remove('show')">
+  <img id="zoom-img" src="" alt="">
 </div>
 
 <!-- WhatsApp flotante mobile -->
