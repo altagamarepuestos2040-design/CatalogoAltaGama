@@ -3411,11 +3411,16 @@ function renderCarrito(){
 }
 
 function cambiarQty(idx, delta){
-  CARRITO[idx].qty += delta;
-  if(CARRITO[idx].qty <= 0){
+  var item = CARRITO[idx];
+  var art = DATA.find(function(a){ return a.id === item.id; });
+  var mult = (art && art.mult) || 1;
+  var paso = mult * (delta > 0 ? 1 : -1);
+  var nueva = item.qty + paso;
+  if(nueva < mult){
     CARRITO.splice(idx, 1);
   } else {
-    CARRITO[idx].precioTotal = CARRITO[idx].qty * CARRITO[idx].precioUnitario;
+    CARRITO[idx].qty = nueva;
+    CARRITO[idx].precioTotal = nueva * item.precioUnitario;
   }
   saveCarrito(CARRITO);
   renderCarrito();
