@@ -1,0 +1,10 @@
+[
+{"nombre":"José","usuario":"jose","pass":"0c3f376a6874accad30290efe675af23b135743306f53d687f39fcd600b4459c","nivel":"owner"},
+{"nombre":"Silvina","usuario":"silvina","pass":"eea3a4eac9fdf684f8756127c14b6ef44e7478fcce62ff78ce003b75ab24e052","nivel":"admin"},
+{"nombre":"Diego","usuario":"diego","pass":"06b9731de84e00ad0834239db5b405beaf7ca701e541b5bcd54479d52f04fb0c","nivel":"admin"},
+{"nombre":"César","usuario":"cesar","pass":"322193ee1c9617127aee544956f491ed614d79a7df3233d26f2b97487b7d2fe5","nivel":"admin"},
+{"nombre":"Emma","usuario":"emma","pass":"cf8c972d167a01cf17ed1eb50a61341285559e157b4ef30692278ac38673a555","nivel":"admin"},
+{"nombre":"Juan","usuario":"juan","pass":"4d119ab8c8904ed0bc9a090aef813f0b0aecb7689aa9edb5a94ec6c7ac4c79bd","nivel":"admin"},
+{"nombre":"Fernanda","usuario":"fernanda","pass":"99d81d7baa0fdf451d0d3ed91cf9aa9b95b011b71c0e1b7d62ef369f11329c8b","nivel":"admin"},
+{"nombre":"Melina","usuario":"melina","pass":"cda90ca94b7df0b061142446aa260d7c659a4f2876c00ecde9bb43ce8864d57e","nivel":"admin"}
+]
