@@ -735,13 +735,40 @@ select:focus{border-color:#CC0000}
   .hsub{font-size:12px}
   #sb{font-size:14px;padding:10px 38px}
 
-  /* Filtros */
+  /* Filtros — 2 filas horizontales scrolleables, sin apilar */
   .filters{padding:0}
-  .finner{padding:8px 10px;gap:8px;flex-wrap:wrap}
-  .fgroup{flex-wrap:wrap;gap:6px;width:100%}
-  #fmod,#fsub,#fmot{min-width:0;width:100%;max-width:100%}
-  .finner>a[href*="wa.me"]{order:99;margin-left:0;width:100%;justify-content:center;border-radius:8px;padding:8px}
-  .cbtn{font-size:11px;padding:5px 10px}
+  .finner{flex-direction:column;padding:6px 0;gap:4px}
+  .fdiv{display:none}
+  .flabel{display:none}
+
+  /* Fila 1: todos los selects en una sola línea scrolleable */
+  .fgroup{
+    overflow-x:auto;overflow-y:hidden;
+    flex-wrap:nowrap;
+    width:100%;
+    gap:6px;
+    padding:2px 10px;
+    scrollbar-width:none;
+  }
+  .fgroup::-webkit-scrollbar{display:none}
+  .fgroup select{
+    flex-shrink:0;font-size:12px;
+    padding:6px 8px;
+    min-width:120px;max-width:none;
+    border-radius:8px;
+  }
+  #fmod,#fsub,#fmot{min-width:110px}
+
+  /* Fila 2: botones de categoría scrolleables */
+  .cbtn{flex-shrink:0;font-size:11px;padding:5px 10px;white-space:nowrap}
+
+  /* WhatsApp: botón flotante fijo abajo a la izquierda */
+  .finner>a[href*="wa.me"]{
+    display:none
+  }
+  body::after{
+    content:'';display:none
+  }
 
   /* Grid */
   .main{padding:12px 10px}
@@ -754,10 +781,10 @@ select:focus{border-color:#CC0000}
   .cdesc{font-size:12px;min-height:30px}
   .cbody{padding:10px}
 
-  /* Modal */
+  /* Modal — sube desde abajo */
   .overlay{padding:0;align-items:flex-end}
   .modal{border-radius:16px 16px 0 0;max-height:92vh;width:100%}
-  .mhead{padding:16px 16px}
+  .mhead{padding:16px}
   .mbody{padding:14px 16px;gap:14px}
   .mnum{font-size:20px}
   .mdesc{font-size:14px}
@@ -769,6 +796,22 @@ select:focus{border-color:#CC0000}
   /* Paginación */
   .pag button{padding:7px 10px;font-size:12px}
   .paginfo{font-size:12px}
+}
+
+/* WhatsApp flotante solo en mobile */
+@media(max-width:640px){
+  #wa-float{
+    display:flex;
+    position:fixed;bottom:24px;left:16px;z-index:400;
+    background:#25D366;color:#fff;
+    border-radius:50%;width:50px;height:50px;
+    align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(0,0,0,.3);
+    text-decoration:none;
+  }
+}
+@media(min-width:641px){
+  #wa-float{display:none}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -5767,6 +5810,10 @@ function ceGuardarEnArchivoManual(){
   </div>
 </div>
 
+<!-- WhatsApp flotante mobile -->
+<a id="wa-float" href="https://wa.me/5491162770520" target="_blank" rel="noopener" title="WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16 2C8.27 2 2 8.27 2 16c0 2.48.67 4.8 1.84 6.8L2 30l7.38-1.82A13.94 13.94 0 0016 30c7.73 0 14-6.27 14-14S23.73 2 16 2zm6.32 19.88c-.35-.17-2.05-1.01-2.37-1.13-.32-.11-.55-.17-.78.17-.23.35-.88 1.13-1.08 1.36-.2.23-.4.26-.74.09-.35-.17-1.47-.54-2.8-1.73a10.54 10.54 0 01-1.94-2.42c-.2-.35-.02-.53.15-.7.15-.15.35-.4.52-.6.17-.2.23-.35.35-.58.11-.23.06-.43-.03-.6-.09-.17-.78-1.88-1.07-2.57-.28-.68-.57-.58-.78-.59h-.67c-.23 0-.6.09-.92.43-.32.35-1.2 1.17-1.2 2.86s1.23 3.32 1.4 3.55c.17.23 2.42 3.7 5.87 5.19.82.35 1.46.56 1.96.72.82.26 1.57.22 2.16.13.66-.1 2.05-.84 2.34-1.65.29-.8.29-1.5.2-1.65-.08-.14-.3-.23-.65-.4z"/></svg>
+</a>
 
 </body>
 </html>
