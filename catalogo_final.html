@@ -1850,6 +1850,9 @@ window.addEventListener("DOMContentLoaded", function(){
 });
 
 function iniciarCatalogo(){
+  var _ms = {};
+  DATA.forEach(function(p){ if(p.marca) _ms[p.marca]=1; });
+  CL_MARCAS = Object.keys(_ms).sort();
   document.getElementById("tc").textContent=DATA.length.toLocaleString("es-AR");
 
   document.getElementById("gr").addEventListener("click",function(e){
@@ -3697,11 +3700,7 @@ async function doLoginCliente(){
 
 
 // ── PANEL CONFIG CLIENTE ──────────────────────────────────────────────────
-var CL_MARCAS = (function(){
-  var ms = {};
-  DATA.forEach(function(p){ if(p.marca) ms[p.marca]=1; });
-  return Object.keys(ms).sort();
-})();
+var CL_MARCAS = [];
 
 function abrirClConfig(){
   if(!clienteActivo) return;
