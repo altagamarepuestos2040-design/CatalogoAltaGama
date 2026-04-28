@@ -2196,9 +2196,10 @@ function fmtPrecio(p){
 }
 
 // ── ADMIN AUTH ──────────────────────────────────────────────────────────────────
-var ADMINS_LOCAL = [];
+var SUPABASE_URL = 'https://psdrpdtvokvylupouyhs.supabase.co';
+var SUPABASE_ANON = 'sb_publishable_y-kO0f1jtl1uDdX2Hpw2YA_HjDUd78R';
 var adminActivo = null;
-fetch('admins.json?v='+Date.now()).then(function(r){return r.json();}).then(function(d){ADMINS_LOCAL=d;}).catch(function(){});
+var adminToken = null;
 
 function abrirAdmin(){
   // Si hay cliente logueado, abrir su panel de cuenta
@@ -2218,6 +2219,7 @@ function cerrarAdmin(){
 }
 function doLogoutAdmin(){
   adminActivo = null;
+  adminToken = null;
   document.getElementById('admin-pm').style.display='none';
   document.getElementById('admin-login').style.display='';
   document.getElementById('admin-user-chip').style.display='none';
@@ -2238,21 +2240,35 @@ async function doLogin(){
   var u = document.getElementById('alog-user').value.trim().toLowerCase();
   var p = document.getElementById('alog-pass').value;
   var hash = await sha256hex(p);
-  var found = ADMINS_LOCAL.find(function(a){ return a.usuario===u && a.pass===hash; });
-  if(found){
-    adminActivo = found;
-    document.getElementById('alog-err').style.display='none';
-    document.getElementById('admin-login').style.display='none';
-    document.getElementById('admin-user-chip').style.display='';
-    document.getElementById('admin-user-chip').textContent = found.nombre + ' (' + found.nivel + ')';
-    document.getElementById('btn-admin-logout').style.display='';
-    // Tab Precios solo visible para owners (Jose)
-    var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
-    if(tabPreciosBtn) tabPreciosBtn.style.display = found.nivel === 'owner' ? '' : 'none';
-    pmInicializar();
-    document.getElementById('admin-pm').style.display='block';
-    ghConfigCheck();
-  } else {
+  try {
+    var r = await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_login', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON,
+        'Authorization': 'Bearer ' + SUPABASE_ANON,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({p_usuario: u, p_pass_hash: hash})
+    });
+    var data = await r.json();
+    if(data && data.ok){
+      adminToken = data.token;
+      adminActivo = {nombre: data.nombre, nivel: data.nivel, usuario: u};
+      document.getElementById('alog-err').style.display='none';
+      document.getElementById('admin-login').style.display='none';
+      document.getElementById('admin-user-chip').style.display='';
+      document.getElementById('admin-user-chip').textContent = data.nombre + ' (' + data.nivel + ')';
+      document.getElementById('btn-admin-logout').style.display='';
+      var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
+      if(tabPreciosBtn) tabPreciosBtn.style.display = data.nivel === 'owner' ? '' : 'none';
+      pmInicializar();
+      document.getElementById('admin-pm').style.display='block';
+      ghConfigCheck();
+    } else {
+      document.getElementById('alog-err').style.display='block';
+      document.getElementById('alog-pass').value='';
+    }
+  } catch(e) {
     document.getElementById('alog-err').style.display='block';
     document.getElementById('alog-pass').value='';
   }
