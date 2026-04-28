@@ -1287,6 +1287,7 @@ function makeCard(p){
      var fmtReventa=reventa>0?('$ '+reventa.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0})):null;
      var qid='qty-'+esc(p.id).replace(/[^a-z0-9]/gi,'_');
      var mult=p.mult||1;
+     if(p.marca==='TRW Engine Components'||p.marca==='TRW') mult=Math.max(mult,2);
      var juego=p.juego||'';
      var addFn=juego
        ? 'event.stopPropagation();agregarJuego(\x27'+esc(p.id)+'\x27,\x27'+esc(juego)+'\x27)'
@@ -3341,6 +3342,7 @@ function agregarAlCarrito(id, qty){
   var art = null;
   for(var i=0;i<DATA.length;i++){ if(DATA[i].id===id){ art=DATA[i]; break; } }
   var mult = (art&&art.mult)||1;
+  if(art&&(art.marca==='TRW Engine Components'||art.marca==='TRW')) mult=Math.max(mult,2);
   var cantidad = Math.max(mult, parseInt(qty)||mult);
   if(mult>1) cantidad = Math.round(cantidad/mult)*mult;
   if(!art) return;
@@ -3452,6 +3454,7 @@ function cambiarQty(idx, delta){
   var item = CARRITO[idx];
   var art = DATA.find(function(a){ return a.id === item.id; });
   var mult = (art && art.mult) || 1;
+  if(art&&(art.marca==='TRW Engine Components'||art.marca==='TRW')) mult=Math.max(mult,2);
   var paso = mult * (delta > 0 ? 1 : -1);
   var nueva = item.qty + paso;
   if(nueva < mult){
