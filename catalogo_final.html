@@ -3992,16 +3992,25 @@ function imprimirPedido(idx){
 
 // ── MÁRGENES DE REVENTA ──
 function clcGetMargenes(){
+  // Admin puede setear márgenes base por marca en el objeto cliente
+  var base = (clienteActivo && clienteActivo.margenes) ? Object.assign({}, clienteActivo.margenes) : {};
+  // El cliente puede sobrescribir desde su panel (localStorage)
   var key = 'rag_cl_mg_' + clienteActivo.usuario;
-  try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; }
+  try{
+    var local = JSON.parse(localStorage.getItem(key)||'{}');
+    return Object.assign(base, local);
+  }catch(e){ return base; }
 }
 function clcRenderMargenes(){
   var mgs = clcGetMargenes();
+  var adminMgs = (clienteActivo && clienteActivo.margenes) ? clienteActivo.margenes : {};
   document.getElementById('cl-mg-global').value = mgs.__global || 0;
   var rows = '';
   CL_MARCAS.forEach(function(m){
+    var adminVal = adminMgs[m] || 0;
+    var hint = adminVal > 0 ? ' <span style="font-size:10px;color:#9CA3AF">(base: '+adminVal+'%)</span>' : '';
     rows += '<div class="clcfg-marca-row">' +
-      '<span class="clcfg-marca-name">' + esc(m) + '</span>' +
+      '<span class="clcfg-marca-name">' + esc(m) + hint + '</span>' +
       '<input type="number" class="clcfg-marca-input" min="0" max="999" step="1" ' +
         'id="cl-mg-' + m.replace(/\s+/g,'_') + '" value="' + (mgs[m]||0) + '">' +
       '<span class="clcfg-marca-suffix">%</span>' +
