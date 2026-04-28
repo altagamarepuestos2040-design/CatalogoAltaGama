@@ -3610,24 +3610,33 @@ async function doLoginCliente(){
   var btn = document.querySelector('.cl-btn');
   btn.textContent = 'Verificando...'; btn.disabled = true;
 
-  // Chequear si es admin primero
-  var adminFound = ADMINS_LOCAL.find(function(a){ return a.usuario===u && a.pass===p; });
-  if(adminFound){
-    btn.textContent = 'Ingresar al catálogo'; btn.disabled = false;
-    cerrarLoginCliente();
-    adminActivo = adminFound;
-    document.getElementById('alog-err').style.display='none';
-    document.getElementById('admin-login').style.display='none';
-    document.getElementById('admin-user-chip').style.display='';
-    document.getElementById('admin-user-chip').textContent = adminFound.nombre + ' (' + adminFound.nivel + ')';
-    document.getElementById('btn-admin-logout').style.display='';
-    var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
-    if(tabPreciosBtn) tabPreciosBtn.style.display = adminFound.nivel === 'owner' ? '' : 'none';
-    pmInicializar();
-    document.getElementById('admin-pm').style.display='block';
-    document.getElementById('admin-overlay').classList.add('show');
-    return;
-  }
+  // Chequear si es admin via Supabase
+  var hash = await sha256hex(p);
+  try {
+    var ar = await fetch(SUPABASE_URL + '/rest/v1/rpc/admin_login', {
+      method: 'POST',
+      headers: {'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json'},
+      body: JSON.stringify({p_usuario: u, p_pass_hash: hash})
+    });
+    var ad = await ar.json();
+    if(ad && ad.ok){
+      adminToken = ad.token;
+      adminActivo = {nombre: ad.nombre, nivel: ad.nivel, usuario: u};
+      btn.textContent = 'Ingresar al catálogo'; btn.disabled = false;
+      cerrarLoginCliente();
+      document.getElementById('alog-err').style.display='none';
+      document.getElementById('admin-login').style.display='none';
+      document.getElementById('admin-user-chip').style.display='';
+      document.getElementById('admin-user-chip').textContent = ad.nombre + ' (' + ad.nivel + ')';
+      document.getElementById('btn-admin-logout').style.display='';
+      var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
+      if(tabPreciosBtn) tabPreciosBtn.style.display = ad.nivel === 'owner' ? '' : 'none';
+      pmInicializar();
+      document.getElementById('admin-pm').style.display='block';
+      document.getElementById('admin-overlay').classList.add('show');
+      return;
+    }
+  } catch(e) {}
 
   // Si el cache venció, sincronizar desde Sheets primero
   if(cacheVencido()){ await sincronizarClientes(); }
