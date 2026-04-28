@@ -1855,7 +1855,7 @@ window.addEventListener("DOMContentLoaded", function(){
 
 function iniciarCatalogo(){
   var _ms = {};
-  var MARCA_ALIAS = { 'Blue Print': 'Febi' };
+  var MARCA_ALIAS = { 'Blue Print': 'Febi', 'TRW': 'TRW Engine Components' };
   DATA.forEach(function(p){ if(p.marca && !MARCA_ALIAS[p.marca]) _ms[p.marca]=1; });
   var fromData = Object.keys(_ms);
   fromData.forEach(function(m){ if(CL_MARCAS.indexOf(m)<0) CL_MARCAS.push(m); });
@@ -3707,7 +3707,7 @@ async function doLoginCliente(){
 
 
 // ── PANEL CONFIG CLIENTE ──────────────────────────────────────────────────
-var CL_MARCAS = ['BOGAP','Febi','KS','PIERBURG','TEXTAR','TRW','TRW Engine Components'];
+var CL_MARCAS = ['BOGAP','Febi','KS','PIERBURG','TEXTAR','TRW Engine Components'];
 
 function abrirClConfig(){
   if(!clienteActivo) return;
@@ -4053,7 +4053,7 @@ function logoutCliente(){
 // ── PRECIO CON DESCUENTO + REVENTA CLIENTE ─────────────────────────────────
 function getMargenReventaCliente(marca){
   if(!clienteActivo) return 0;
-  var MARCA_ALIAS = { 'Blue Print': 'Febi' };
+  var MARCA_ALIAS = { 'Blue Print': 'Febi', 'TRW': 'TRW Engine Components' };
   var marcaReal = MARCA_ALIAS[marca] || marca;
   var key = 'rag_cl_mg_' + clienteActivo.usuario;
   try{
