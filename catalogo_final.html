@@ -17,18 +17,21 @@ body{background:#F0F2F5;font-family:'DM Sans',sans-serif;min-height:100vh}
 .firma-name{font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px}
 .firma-sub{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.15em;text-transform:uppercase;margin-top:2px}
 .brand-logos{display:flex;align-items:center;gap:12px}
-.brand-pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-family:'DM Sans',sans-serif}
-.pill-febi{background:#fff;color:#CC0000;cursor:pointer;transition:opacity .15s}
-.pill-febi:hover,.pill-febi.active{opacity:.8;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
-.pill-bp{background:#1E3A8A;color:#fff;cursor:pointer;transition:opacity .15s}
-.pill-bp:hover,.pill-bp.active{opacity:.8;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
-.pill-textar{background:#FFD700;color:#111;cursor:pointer;font-weight:900;transition:opacity .15s}
-.pill-textar:hover,.pill-textar.active{opacity:.8;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
-.pill-ks{background:#1B3A6B;color:#fff;cursor:pointer;transition:opacity .15s}
-.pill-ks:hover,.pill-ks.active{opacity:.8;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
-.pill-pierburg{background:#1565C0;color:#fff;cursor:pointer;transition:opacity .15s}
-.pill-pierburg:hover,.pill-pierburg.active{opacity:.8;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
-.pill-bogap{background:#fff;color:#1B3A8A;border:2px solid #1B3A8A;cursor:pointer;font-weight:900;transition:opacity .15s}
+.brand-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:4px 10px;border-radius:10px;cursor:pointer;
+  transition:opacity .2s, box-shadow .2s, transform .15s;
+  border:2px solid transparent;
+}
+.brand-pill:hover{opacity:.85;transform:scale(1.05)}
+.brand-pill.active{box-shadow:0 0 0 3px rgba(255,255,255,.9);transform:scale(1.05)}
+.brand-logo-img{height:34px;width:auto;display:block;object-fit:contain}
+.pill-febi{background:#CC0000}
+.pill-textar{background:#fff}
+.pill-ks{background:#fff}
+.pill-pierburg{background:#fff}
+.pill-trw{background:#fff}
+.pill-bogap{background:#fff}
 .pill-bogap:hover,.pill-bogap.active{opacity:.8;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
 
 h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
