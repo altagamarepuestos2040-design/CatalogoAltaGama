@@ -2494,21 +2494,41 @@ function pmActualizarBarraGuardar(){
   document.getElementById('pm-changed-count').textContent = n;
 }
 
+async function sincronizarPreciosSupabase(preciosObj){
+  if(!adminToken) return false;
+  try{
+    var r = await fetch(SUPABASE_URL + '/rest/v1/rpc/update_precios_auth', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON,
+        'Authorization': 'Bearer ' + SUPABASE_ANON,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({p_token: adminToken, p_precios: preciosObj})
+    });
+    var d = await r.json();
+    return d && d.ok;
+  } catch(e){ return false; }
+}
+
 async function pmPublicarEnWeb(){
   pmGuardar();
-  pmToast('\u23F3 Publicando precios...');
+  pmToast('⏳ Publicando precios...');
   try{
     var preciosActuales = Object.assign({}, PRECIOS_BASE, JSON.parse(localStorage.getItem('rag_precios_v1')||'{}'));
-    // Solo guardar los que difieren del original
     var preciosDiff = {};
     Object.keys(preciosActuales).forEach(function(k){
       if(preciosActuales[k] !== PRECIOS_BASE[k]) preciosDiff[k] = preciosActuales[k];
     });
     var jsonContent = JSON.stringify(preciosDiff, null, 2);
-    var ok = await ghPublicarArchivo('precios.json', jsonContent, 'Actualizaci\u00f3n de precios');
-    if(ok) pmToast('\u2705 Precios publicados. Se ver\u00e1n en la web en ~2 minutos.');
+    var results = await Promise.all([
+      ghPublicarArchivo('precios.json', jsonContent, 'Actualización de precios'),
+      sincronizarPreciosSupabase(preciosActuales)
+    ]);
+    if(results[0]) pmToast('✅ Precios publicados. Se verán en la web en ~2 minutos.');
+    else pmToast('⚠ Error publicando en GitHub');
   } catch(e){
-    pmToast('\u26A0 Error: ' + e.message);
+    pmToast('⚠ Error: ' + e.message);
   }
 }
 function pmGuardar(){
