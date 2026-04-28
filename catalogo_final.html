@@ -4007,12 +4007,12 @@ function clcRenderMargenes(){
   document.getElementById('cl-mg-global').value = mgs.__global || 0;
   var rows = '';
   CL_MARCAS.forEach(function(m){
-    var adminVal = adminMgs[m] || 0;
-    var hint = adminVal > 0 ? ' <span style="font-size:10px;color:#9CA3AF">(base: '+adminVal+'%)</span>' : '';
+    var adminMin = adminMgs[m] || 0;
+    var hint = adminMin > 0 ? ' <span style="font-size:10px;color:#9CA3AF">(mínimo: '+adminMin+'%)</span>' : '';
     rows += '<div class="clcfg-marca-row">' +
       '<span class="clcfg-marca-name">' + esc(m) + hint + '</span>' +
-      '<input type="number" class="clcfg-marca-input" min="0" max="999" step="1" ' +
-        'id="cl-mg-' + m.replace(/\s+/g,'_') + '" value="' + (mgs[m]||0) + '">' +
+      '<input type="number" class="clcfg-marca-input" min="'+adminMin+'" max="999" step="1" ' +
+        'id="cl-mg-' + m.replace(/\s+/g,'_') + '" value="' + (mgs[m]||adminMin) + '">' +
       '<span class="clcfg-marca-suffix">%</span>' +
     '</div>';
   });
