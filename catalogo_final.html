@@ -3992,27 +3992,18 @@ function imprimirPedido(idx){
 
 // ── MÁRGENES DE REVENTA ──
 function clcGetMargenes(){
-  // Admin puede setear márgenes base por marca en el objeto cliente
-  var base = (clienteActivo && clienteActivo.margenes) ? Object.assign({}, clienteActivo.margenes) : {};
-  // El cliente puede sobrescribir desde su panel (localStorage)
   var key = 'rag_cl_mg_' + clienteActivo.usuario;
-  try{
-    var local = JSON.parse(localStorage.getItem(key)||'{}');
-    return Object.assign(base, local);
-  }catch(e){ return base; }
+  try{ return JSON.parse(localStorage.getItem(key)||'{}'); }catch(e){ return {}; }
 }
 function clcRenderMargenes(){
   var mgs = clcGetMargenes();
-  var adminMgs = (clienteActivo && clienteActivo.margenes) ? clienteActivo.margenes : {};
   document.getElementById('cl-mg-global').value = mgs.__global || 0;
   var rows = '';
   CL_MARCAS.forEach(function(m){
-    var adminMin = adminMgs[m] || 0;
-    var hint = adminMin > 0 ? ' <span style="font-size:10px;color:#9CA3AF">(mínimo: '+adminMin+'%)</span>' : '';
     rows += '<div class="clcfg-marca-row">' +
-      '<span class="clcfg-marca-name">' + esc(m) + hint + '</span>' +
-      '<input type="number" class="clcfg-marca-input" min="'+adminMin+'" max="999" step="1" ' +
-        'id="cl-mg-' + m.replace(/\s+/g,'_') + '" value="' + (mgs[m]||adminMin) + '">' +
+      '<span class="clcfg-marca-name">' + esc(m) + '</span>' +
+      '<input type="number" class="clcfg-marca-input" min="0" max="999" step="1" ' +
+        'id="cl-mg-' + m.replace(/\s+/g,'_') + '" value="' + (mgs[m]||0) + '">' +
       '<span class="clcfg-marca-suffix">%</span>' +
     '</div>';
   });
@@ -4055,10 +4046,6 @@ function logoutCliente(){
 // ── PRECIO CON DESCUENTO + REVENTA CLIENTE ─────────────────────────────────
 function getMargenReventaCliente(marca){
   if(!clienteActivo) return 0;
-  // Primero leer del objeto cliente (seteado por admin), luego localStorage del cliente
-  if(clienteActivo.margenes){
-    if(clienteActivo.margenes[marca] > 0) return clienteActivo.margenes[marca];
-  }
   var key = 'rag_cl_mg_' + clienteActivo.usuario;
   try{
     var mgs = JSON.parse(localStorage.getItem(key)||'{}');
@@ -4101,8 +4088,6 @@ function abrirModalCliente(idx){
     document.getElementById('mcl-desc').value    = c.descuento || 0;
     document.getElementById('mcl-pago').value    = c.pago || 'Contado';
     document.getElementById('mcl-notas').value   = c.notas || '';
-    // Cargar márgenes por marca
-    mclRenderMargenes(c.margenes || {});
     // Cargar pagos habilitados
     var pagosArr = (c.pagos||'transferencia').split(',');
     document.getElementById('mcl-pago-transferencia').checked = pagosArr.indexOf('transferencia')>=0;
@@ -4116,7 +4101,6 @@ function abrirModalCliente(idx){
     });
     document.getElementById('mcl-desc').value = '0';
     document.getElementById('mcl-pago').value = 'Contado';
-    mclRenderMargenes({});
     // Por defecto solo transferencia habilitada
     document.getElementById('mcl-pago-transferencia').checked = true;
     document.getElementById('mcl-pago-cheque').checked        = false;
@@ -4150,31 +4134,6 @@ function abrirModalCliente(idx){
 
 function cerrarModalCliente(){
   document.getElementById('modal-cl').classList.remove('show');
-}
-
-function mclRenderMargenes(margenes){
-  var marcas = (typeof CL_MARCAS !== 'undefined') ? CL_MARCAS : [];
-  var cont = document.getElementById('mcl-margenes-rows');
-  if(!cont) return;
-  cont.innerHTML = marcas.map(function(m){
-    var id = 'mcl-mg-' + m.replace(/[^a-zA-Z0-9]/g,'_');
-    var val = margenes[m] || 0;
-    return '<div class="mcl-field"><label>' + esc(m) + '</label>'+
-      '<input type="number" id="'+id+'" min="0" max="999" step="1" value="'+val+'" placeholder="0">'+
-      '</div>';
-  }).join('');
-}
-
-function mclGetMargenes(){
-  var marcas = (typeof CL_MARCAS !== 'undefined') ? CL_MARCAS : [];
-  var result = {};
-  marcas.forEach(function(m){
-    var id = 'mcl-mg-' + m.replace(/[^a-zA-Z0-9]/g,'_');
-    var el = document.getElementById(id);
-    var v = el ? (parseFloat(el.value)||0) : 0;
-    if(v > 0) result[m] = v;
-  });
-  return result;
 }
 
 function guardarCliente(){
@@ -4217,7 +4176,6 @@ function guardarCliente(){
                  return sel.length ? sel.join(',') : 'transferencia';
                })(),
     notas:     document.getElementById('mcl-notas').value.trim(),
-    margenes:  mclGetMargenes(),
     dir:       _dirObj,
     activo:    clEditIdx>=0 ? CLIENTES[clEditIdx].activo : true,
     fechaAlta: clEditIdx>=0 ? CLIENTES[clEditIdx].fechaAlta : new Date().toLocaleDateString('es-AR'),
@@ -5405,12 +5363,6 @@ function ceGuardarEnArchivoManual(){
           <input type="text" id="mcl-dir-notas" placeholder="Portero automático, piso, referencia..."></div>
       </div>
 
-      <!-- MÁRGENES DE REVENTA POR MARCA -->
-      <div id="mcl-margenes-section" style="border-top:1.5px solid #F1F5F9;margin-top:4px;padding-top:12px">
-        <div style="font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">&#128200; M&aacute;rgenes de reventa por marca (%)</div>
-        <div style="font-size:12px;color:#9CA3AF;margin-bottom:10px">El cliente ver&aacute; los precios multiplicados por este margen. 0 = sin margen.</div>
-        <div id="mcl-margenes-rows" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
-      </div>
 
     </div>
     <div class="mcl-footer">
