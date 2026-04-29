@@ -3690,15 +3690,16 @@ async function pedConfirmarEdicion(){
 var ING_CACHE = [];
 
 async function ingCargar(force){
-  // Si ya hay datos en cache y no se fuerza actualización, renderizar directo
-  if(!force && ING_CACHE.length > 0){ ingRender(ING_CACHE); return; }
+  // Mostrar cache de inmediato (cargado por dashCargar al iniciar sesión)
+  ingRender(ING_CACHE);
+  // Solo hace fetch a la API cuando el usuario presiona Actualizar
+  if(!force) return;
   var el = document.getElementById('ing-results');
-  if(el) el.innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">&#8635; Cargando artículos pendientes...</div>';
+  if(el) el.innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">&#8635; Actualizando...</div>';
   try{
     var res = await apiSheets('getPendientesStock', {});
     if(res && res.data) ING_CACHE = res.data.filter(function(r){ return (r.estado||'').toLowerCase() === 'pendiente'; });
-    else throw new Error('sin data');
-  }catch(e){ ING_CACHE = []; }
+  }catch(e){ /* mantener cache actual */ }
   ingRender(ING_CACHE);
   var badge = document.getElementById('dash-stock-count');
   if(badge) badge.textContent = ING_CACHE.length;
@@ -4208,8 +4209,53 @@ function clcSwitchTab(secId, btn){
   document.querySelectorAll('.clcfg-tab').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById(secId).classList.add('active');
   btn.classList.add('active');
-  if(secId === 'clcfg-historial') clcRenderHistorial();
-  if(secId === 'clcfg-margenes') clcRenderMargenes();
+  if(secId === 'clcfg-historial')   clcRenderHistorial();
+  if(secId === 'clcfg-pendientes')  clcRenderPendientes();
+  if(secId === 'clcfg-margenes')    clcRenderMargenes();
+}
+
+function clcRenderPendientes(){
+  var body = document.getElementById('clcfg-pend-body');
+  if(!body) return;
+
+  // Si el historial aún no se cargó, dispararlo primero
+  if(!_HIST_CACHE.length){
+    body.innerHTML = '<div class="clcfg-hist-empty">&#9203; Cargando...</div>';
+    clcRenderHistorial().then(function(){ clcRenderPendientes(); });
+    return;
+  }
+
+  var conPend = _HIST_CACHE.filter(function(p){
+    try{ return p.items_pendientes && JSON.parse(p.items_pendientes).length > 0; }catch(e){ return false; }
+  });
+
+  // Badge del tab
+  var total = 0;
+  conPend.forEach(function(p){ try{ total += JSON.parse(p.items_pendientes||'[]').length; }catch(e){} });
+  var badge = document.getElementById('clcfg-pend-badge');
+  if(badge){ badge.textContent = total; badge.style.display = total > 0 ? 'inline' : 'none'; }
+
+  if(!conPend.length){
+    body.innerHTML = '<div class="clcfg-hist-empty">&#10003; No tenés artículos pendientes de stock.</div>';
+    return;
+  }
+
+  var html = '<div style="font-size:12px;color:#9CA3AF;margin-bottom:14px">Estos artículos estaban sin stock al confirmar tu pedido. Te avisamos por WhatsApp cuando lleguen al local.</div>';
+  conPend.forEach(function(p){
+    var pend = [];
+    try{ pend = JSON.parse(p.items_pendientes||'[]'); }catch(e){}
+    html += '<div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:10px;padding:14px 16px;margin-bottom:14px">'
+      + '<div style="font-size:11px;color:#92400E;font-weight:700;margin-bottom:10px">Pedido&nbsp;' + esc(p.numero||'') + '&nbsp;&mdash;&nbsp;' + esc(p.fecha||'') + '</div>'
+      + pend.map(function(i){
+          return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #FDE68A">'
+            + '<span style="font-family:monospace;font-size:12px;font-weight:700;color:#92400E;min-width:70px">' + esc(i.id||'') + '</span>'
+            + '<span style="flex:1;font-size:13px;color:#78350F">' + esc(i.desc||i.nombre||'') + '</span>'
+            + '<span style="font-size:12px;font-weight:700;color:#92400E">' + esc(String(i.qty||1)) + '&nbsp;un.</span>'
+            + '</div>';
+        }).join('')
+      + '</div>';
+  });
+  body.innerHTML = html;
 }
 
 // ── DIRECCIÓN ──
@@ -4274,7 +4320,14 @@ async function clcRenderHistorial(){
   });
   var STATUS_CLASS = { pendiente:'pendiente', confirmado:'confirmado', enviado:'enviado', entregado:'entregado' };
   var html = '';
-  _HIST_CACHE = mios; // guardar para imprimirPedido()
+  _HIST_CACHE = mios;
+  // Actualizar badge de pendientes
+  (function(){
+    var tot = 0;
+    mios.forEach(function(p){ try{ tot += JSON.parse(p.items_pendientes||'[]').length; }catch(e){} });
+    var b = document.getElementById('clcfg-pend-badge');
+    if(b){ b.textContent = tot; b.style.display = tot > 0 ? 'inline' : 'none'; }
+  })();
   var _histIdx = 0;
   mios.forEach(function(p){
     var _myIdx = _histIdx++;
@@ -6058,6 +6111,7 @@ function ceGuardarEnArchivoManual(){
     <div class="clcfg-tabs">
       <button class="clcfg-tab active" onclick="clcSwitchTab('clcfg-direccion',this)">&#128205; Direcci&oacute;n de env&iacute;o</button>
       <button class="clcfg-tab" onclick="clcSwitchTab('clcfg-historial',this)">&#128203; Historial de pedidos</button>
+      <button class="clcfg-tab" onclick="clcSwitchTab('clcfg-pendientes',this)">&#9203; Mis pendientes <span id="clcfg-pend-badge" style="display:none;background:#D97706;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
       <button class="clcfg-tab" onclick="clcSwitchTab('clcfg-margenes',this)">&#128200; M&aacute;rgenes de reventa</button>
     </div>
     <div class="clcfg-body">
@@ -6104,6 +6158,13 @@ function ceGuardarEnArchivoManual(){
       <div class="clcfg-section" id="clcfg-historial">
         <div id="clcfg-hist-body">
           <div class="clcfg-hist-empty">&#128203; Cargando pedidos...</div>
+        </div>
+      </div>
+
+      <!-- TAB: MIS PENDIENTES -->
+      <div class="clcfg-section" id="clcfg-pendientes">
+        <div id="clcfg-pend-body">
+          <div class="clcfg-hist-empty">&#128203; Cargando...</div>
         </div>
       </div>
 
