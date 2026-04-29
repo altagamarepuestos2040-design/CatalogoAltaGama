@@ -3426,7 +3426,7 @@ async function dashCargar(){
   else{ try{ DASH_PEDIDOS = JSON.parse(localStorage.getItem('rag_pedidos_v1')||'[]'); }catch(ex){ DASH_PEDIDOS=[]; } }
   PED_CACHE = DASH_PEDIDOS;
   if(resPendStock.status==='fulfilled' && resPendStock.value && resPendStock.value.data){
-    ING_CACHE = resPendStock.value.data.filter(function(r){ return (r.estado||'').toLowerCase()==='pendiente'; });
+    ING_CACHE = resPendStock.value.data.filter(function(r){ return String(r.estado||'').toLowerCase() !== 'entregado'; });
   }
   var badge = document.getElementById('dash-stock-count');
   if(badge) badge.textContent = ING_CACHE.length;
@@ -3690,29 +3690,44 @@ async function pedConfirmarEdicion(){
 var ING_CACHE = [];
 
 async function ingCargar(force){
-  // Mostrar cache de inmediato (cargado por dashCargar al iniciar sesión)
-  ingRender(ING_CACHE);
-  // Solo hace fetch a la API cuando el usuario presiona Actualizar
-  if(!force) return;
   var el = document.getElementById('ing-results');
-  if(el) el.innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">&#8635; Actualizando...</div>';
+  // Si ya hay items en cache, mostrar de inmediato
+  if(ING_CACHE.length > 0) ingRenderSafe(ING_CACHE);
+  else if(el) el.innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">&#8635; Buscando artículos pendientes...</div>';
+
+  // Siempre refrescar (para que aparezcan aunque el dashboard no haya cargado primero)
   try{
     var res = await apiSheets('getPendientesStock', {});
-    if(res && res.data) ING_CACHE = res.data.filter(function(r){ return (r.estado||'').toLowerCase() === 'pendiente'; });
+    if(res && res.data){
+      // Mostrar todo lo que NO esté entregado (filtro permisivo)
+      ING_CACHE = res.data.filter(function(r){
+        return String(r.estado||'').toLowerCase() !== 'entregado';
+      });
+    }
   }catch(e){ /* mantener cache actual */ }
-  ingRender(ING_CACHE);
+  ingRenderSafe(ING_CACHE);
   var badge = document.getElementById('dash-stock-count');
   if(badge) badge.textContent = ING_CACHE.length;
+  var ingBadge = document.getElementById('ing-badge');
+  if(ingBadge){ ingBadge.textContent = ING_CACHE.length; ingBadge.style.display = ING_CACHE.length > 0 ? 'inline' : 'none'; }
+}
+
+function ingRenderSafe(lista){
+  try{ ingRender(lista); }
+  catch(e){
+    var el = document.getElementById('ing-results');
+    if(el) el.innerHTML = '<div style="padding:20px;color:#DC2626">Error al mostrar: '+esc(e.message||e)+'</div>';
+  }
 }
 
 function ingBuscar(){
   var q = (document.getElementById('ing-search').value||'').toLowerCase().trim();
   var filtered = q ? ING_CACHE.filter(function(r){
-    return (r.id_articulo||'').toLowerCase().indexOf(q)>=0
-      || (r.descripcion||'').toLowerCase().indexOf(q)>=0
-      || (r.cliente||'').toLowerCase().indexOf(q)>=0;
+    return String(r.id_articulo||'').toLowerCase().indexOf(q)>=0
+      || String(r.descripcion||'').toLowerCase().indexOf(q)>=0
+      || String(r.cliente||'').toLowerCase().indexOf(q)>=0;
   }) : ING_CACHE;
-  ingRender(filtered);
+  ingRenderSafe(filtered);
 }
 
 function ingRender(lista){
@@ -3740,8 +3755,8 @@ function ingRender(lista){
       +'</div>'
       +'<div class="ing-compradores">';
     g.filas.forEach(function(r){
-      var waNum = (r.tel||'').replace(/\D/g,'');
-      var waMsg = 'Hola '+(r.cliente||r.usuario)+'! El artículo ['+(r.id_articulo||'')+'] '+(r.descripcion||'')+' de tu pedido '+(r.nro_pedido||'')+' ya llegó al local. Podes pasar a retirarlo o coordinar el envío.';
+      var waNum = String(r.tel||'').replace(/\D/g,'');
+      var waMsg = 'Hola '+String(r.cliente||r.usuario||'')+'! El artículo ['+String(r.id_articulo||'')+'] '+String(r.descripcion||'')+' de tu pedido '+String(r.nro_pedido||'')+' ya llegó al local. Podes pasar a retirarlo o coordinar el envío.';
       var waUrl = waNum.length>=8 ? 'https://wa.me/'+waNum+'?text='+encodeURIComponent(waMsg) : '';
       h += '<div class="ing-comprador-row">'
         +'<div class="ing-comprador-info">'
@@ -3763,8 +3778,8 @@ async function ingMarcarEntregado(idArt, nroPed, btn){
   btn.disabled = true; btn.textContent = 'Guardando...';
   try{
     await apiSheets('updatePendienteStock', { id_articulo: idArt, nro_pedido: nroPed, estado: 'entregado' });
-    ING_CACHE = ING_CACHE.filter(function(r){ return !(r.id_articulo===idArt && r.nro_pedido===nroPed); });
-    ingRender(ING_CACHE);
+    ING_CACHE = ING_CACHE.filter(function(r){ return !(String(r.id_articulo)===String(idArt) && String(r.nro_pedido)===String(nroPed)); });
+    ingRenderSafe(ING_CACHE);
     var badge = document.getElementById('dash-stock-count');
     if(badge) badge.textContent = ING_CACHE.length;
     pmToast('✅ Artículo '+idArt+' marcado como entregado');
