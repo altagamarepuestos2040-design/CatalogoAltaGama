@@ -3689,7 +3689,9 @@ async function pedConfirmarEdicion(){
 // ── INGRESO DE MERCADERÍA ─────────────────────────────────────────────────
 var ING_CACHE = [];
 
-async function ingCargar(){
+async function ingCargar(force){
+  // Si ya hay datos en cache y no se fuerza actualización, renderizar directo
+  if(!force && ING_CACHE.length > 0){ ingRender(ING_CACHE); return; }
   var el = document.getElementById('ing-results');
   if(el) el.innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">&#8635; Cargando artículos pendientes...</div>';
   try{
@@ -3698,7 +3700,6 @@ async function ingCargar(){
     else throw new Error('sin data');
   }catch(e){ ING_CACHE = []; }
   ingRender(ING_CACHE);
-  // Actualizar badge dashboard
   var badge = document.getElementById('dash-stock-count');
   if(badge) badge.textContent = ING_CACHE.length;
 }
@@ -6315,7 +6316,7 @@ function ceGuardarEnArchivoManual(){
         <div class="ing-toolbar">
           <span class="pm-toolbar-title">&#128230; Ingreso de mercader&iacute;a</span>
           <input type="text" class="ing-search" id="ing-search" placeholder="&#128269; Buscar por c&oacute;digo, descripci&oacute;n o cliente..." oninput="ingBuscar()">
-          <button class="pm-btn pm-btn-secondary" onclick="ingCargar()">&#8635; Actualizar</button>
+          <button class="pm-btn pm-btn-secondary" onclick="ingCargar(true)">&#8635; Actualizar</button>
         </div>
         <div style="padding:14px">
           <div style="font-size:12px;color:#9CA3AF;margin-bottom:12px">Los art&iacute;culos aparecen aqu&iacute; cuando el admin los marc&oacute; como sin stock al confirmar un pedido. Notific&aacute; al comprador cuando el art&iacute;culo llega al local.</div>
