@@ -3220,9 +3220,97 @@ function pedVerDetalle(idx){
       +'<div style="text-align:right;font-size:16px;font-weight:800;color:#1E3A5F;margin-top:12px;padding-top:10px;border-top:2px solid #E5E7EB">'
         +'Total: $ '+Number(p.total||0).toLocaleString('es-AR',{minimumFractionDigits:0})
       +'</div>'
+      // Artículos pendientes de stock
+      +(function(){
+        var pend=[];
+        try{ if(p.items_pendientes) pend=JSON.parse(p.items_pendientes||'[]'); }catch(e){}
+        if(!pend.length) return '';
+        return '<div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:10px;padding:12px 14px;margin-top:14px">'
+          +'<div style="font-size:12px;font-weight:800;color:#92400E;margin-bottom:8px">⏳ Artículos sin stock — pendientes de ingreso</div>'
+          +'<table style="width:100%;border-collapse:collapse;font-size:12px">'
+          +pend.map(function(i){
+            return '<tr style="border-bottom:1px solid #FDE68A">'
+              +'<td style="padding:5px 8px;font-weight:700;font-family:monospace;color:#92400E">'+esc(i.id||'')+'</td>'
+              +'<td style="padding:5px 8px;color:#78350F">'+esc(i.desc||i.nombre||'')+'</td>'
+              +'<td style="padding:5px 8px;text-align:center;font-weight:700">'+esc(String(i.qty||1))+'</td>'
+              +'</tr>';
+          }).join('')
+          +'</table>'
+          +'</div>';
+      })()
+    +'</div>'
+    +'<div style="padding:12px 22px;border-top:1px solid #F1F5F9;display:flex;justify-content:flex-end;gap:10px">'
+      +'<button onclick="pedImprimirAdmin(\''+esc(p.numero)+'\')" style="padding:8px 18px;background:#CC0000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#128438; Descargar PDF</button>'
+      +'<button onclick="document.getElementById(\'ped-detalle-overlay\').remove()" style="padding:8px 18px;background:#F3F4F6;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Cerrar</button>'
     +'</div>'
     +'</div></div>';
   document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function pedImprimirAdmin(nro){
+  var p = PED_CACHE.find(function(x){ return x.numero===nro; });
+  if(!p){ pmToast('Pedido no encontrado'); return; }
+  var items=[], pend=[];
+  try{ items=Array.isArray(p.items)?p.items:JSON.parse(p.items||'[]'); }catch(e){}
+  try{ if(p.items_pendientes) pend=JSON.parse(p.items_pendientes||'[]'); }catch(e){}
+  var filas = items.map(function(i){
+    return '<tr><td style="border:1px solid #ccc;padding:5px 8px;text-align:center">'+esc(i.id||'')+'</td>'
+      +'<td style="border:1px solid #ccc;padding:5px 8px">'+esc(i.desc||'')+'</td>'
+      +'<td style="border:1px solid #ccc;padding:5px 8px;text-align:center">'+Number(i.qty||1)+'</td>'
+      +'<td style="border:1px solid #ccc;padding:5px 8px;text-align:right">$ '+Number(i.precioUnitario||0).toLocaleString('es-AR',{minimumFractionDigits:2})+'</td>'
+      +'<td style="border:1px solid #ccc;padding:5px 8px;text-align:right;font-weight:700">$ '+Number(i.precioTotal||0).toLocaleString('es-AR',{minimumFractionDigits:2})+'</td>'
+      +'</tr>';
+  }).join('');
+  var filasPend = pend.map(function(i){
+    return '<tr><td style="border:1px solid #FDE68A;padding:5px 8px;text-align:center;color:#92400E;font-weight:700">'+esc(i.id||'')+'</td>'
+      +'<td style="border:1px solid #FDE68A;padding:5px 8px;color:#78350F">'+esc(i.desc||'')+'</td>'
+      +'<td style="border:1px solid #FDE68A;padding:5px 8px;text-align:center">'+Number(i.qty||1)+'</td>'
+      +'<td colspan="2" style="border:1px solid #FDE68A;padding:5px 8px;color:#92400E;font-weight:700">SIN STOCK — PENDIENTE</td>'
+      +'</tr>';
+  }).join('');
+  var total = Number(p.total||0);
+  var html='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Pedido '+esc(p.numero||'')+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:20px}table{border-collapse:collapse;width:100%}.no-print{display:block}@media print{.no-print{display:none}}</style>'
+    +'</head><body>'
+    +'<div class="no-print" style="text-align:right;margin-bottom:12px"><button onclick="window.print()" style="padding:8px 20px;background:#CC0000;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">&#128438; Imprimir / Guardar PDF</button></div>'
+    +'<table style="border:2px solid #111;margin-bottom:0"><tr>'
+      +'<td style="width:55%;padding:12px 14px;vertical-align:top;border-right:2px solid #111">'
+        +'<div style="font-size:16px;font-weight:900;color:#CC0000">REPUESTOS ALTA GAMA</div>'
+        +'<div style="font-size:10px;color:#555;margin-bottom:6px">de FECHINO JOSE LUIS Y PUYOL EDUARDO E. SH</div>'
+        +'<div style="font-size:10px">Av. Alvarez Thomas 2040 (1430) C.A.B.A.</div>'
+        +'<div style="font-size:10px">Tel.: (011)4554-7000 | WhatsApp: 11-6277-0520</div>'
+        +'<div style="font-size:10px">consultas@repuestosaltagama.com.ar</div>'
+      +'</td>'
+      +'<td style="padding:12px 14px;vertical-align:top">'
+        +'<div style="font-size:13px;font-weight:900">PEDIDO Nº: '+esc(p.numero||'')+'</div>'
+        +'<div style="font-size:11px;margin-top:4px">Fecha: '+esc(p.fecha||'')+'</div>'
+        +'<div style="font-size:11px;margin-top:4px">Estado: <strong>'+esc(p.estado||'')+'</strong></div>'
+      +'</td>'
+    +'</tr></table>'
+    +'<table style="border:1px solid #111;border-top:none;margin-bottom:12px"><tr>'
+      +'<td style="width:50%;padding:8px 14px;border-right:1px solid #ccc;vertical-align:top;font-size:11px">'
+        +'<strong>Cliente:</strong> '+esc(p.cliente||p.usuario||'')+'<br>'
+        +(p.email?'<strong>Email:</strong> '+esc(p.email)+'<br>':'')
+        +(p.tel?'<strong>Tel:</strong> '+esc(p.tel)+'<br>':'')
+      +'</td>'
+      +'<td style="padding:8px 14px;vertical-align:top;font-size:11px">'
+        +'<strong>Envío:</strong> '+esc(p.envio||'')+'<br>'
+        +(p.direccion?'<strong>Dirección:</strong> '+esc(p.direccion)+'<br>':'')
+        +'<strong>Pago:</strong> '+esc(p.pago||'')
+      +'</td>'
+    +'</tr></table>'
+    +'<table><thead><tr style="background:#f0f0f0">'
+      +'<th style="border:1px solid #ccc;padding:6px 8px;text-align:center">Código</th>'
+      +'<th style="border:1px solid #ccc;padding:6px 8px;text-align:left">Descripción</th>'
+      +'<th style="border:1px solid #ccc;padding:6px 8px;text-align:center">Cant.</th>'
+      +'<th style="border:1px solid #ccc;padding:6px 8px;text-align:right">P. Unit.</th>'
+      +'<th style="border:1px solid #ccc;padding:6px 8px;text-align:right">Subtotal</th>'
+    +'</tr></thead><tbody>'+filas+(filasPend?filasPend:'')+'</tbody></table>'
+    +'<div style="text-align:right;font-size:14px;font-weight:900;margin-top:10px;padding-top:8px;border-top:2px solid #111">TOTAL: $ '+total.toLocaleString('es-AR',{minimumFractionDigits:2})+'</div>'
+    +(p.notas?'<div style="margin-top:10px;font-size:11px"><strong>Observaciones:</strong> '+esc(p.notas)+'</div>':'')
+    +(pend.length?'<div style="margin-top:10px;padding:8px;background:#FFFBEB;border:1px solid #FDE68A;font-size:11px;color:#92400E"><strong>⏳ Artículos sin stock (pendientes de ingreso):</strong> '+pend.map(function(i){return i.qty+'x ['+i.id+'] '+i.desc;}).join(' — ')+'</div>':'')
+    +'</body></html>';
+  var w=window.open('','_blank'); w.document.write(html); w.document.close();
 }
 
 // Cargar pedidos automáticamente cuando se abre el admin y hay sesión activa
