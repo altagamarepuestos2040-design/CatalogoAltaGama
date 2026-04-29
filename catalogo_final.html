@@ -731,6 +731,100 @@ select:focus{border-color:#CC0000}
   transition:all .2s;margin-top:10px;margin-left:8px;
 }
 .dash-reject-btn:hover{ background:#FEE2E2; }
+.dash-edit-btn{
+  background:#EFF6FF;color:#1D4ED8;border:1.5px solid #BFDBFE;padding:10px 16px;
+  border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+  transition:all .2s;margin-top:10px;margin-left:8px;
+}
+.dash-edit-btn:hover{ background:#DBEAFE; }
+
+/* ── EDITOR DE PEDIDO ─────────────────────────────────────────────────────── */
+#ped-edit-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+.ped-edit-box{
+  background:#fff;border-radius:14px;width:100%;max-width:720px;
+  max-height:92vh;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+}
+.ped-edit-header{
+  background:#1A1A1A;padding:14px 20px;border-radius:14px 14px 0 0;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.ped-edit-header span{ color:#fff;font-weight:800;font-size:15px; }
+.ped-edit-body{
+  padding:18px 20px;overflow-y:auto;flex:1;
+}
+.ped-edit-footer{
+  padding:14px 20px;border-top:1px solid #F1F5F9;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;
+  background:#F8FAFC;
+}
+.ped-edit-table{ width:100%;border-collapse:collapse;font-size:13px; }
+.ped-edit-table th{
+  background:#F3F4F6;color:#6B7280;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;padding:8px 10px;text-align:left;
+  border-bottom:2px solid #E5E7EB;
+}
+.ped-edit-row{ border-bottom:1px solid #F3F4F6;transition:background .15s; }
+.ped-edit-row:last-child{ border-bottom:none; }
+.ped-edit-row.pend{
+  background:#FFFBEB;opacity:.6;text-decoration:line-through;
+}
+.ped-edit-row.pend td:last-child{ text-decoration:none;opacity:1; }
+.ped-edit-sinstock-btn{
+  padding:4px 10px;background:#FEE2E2;color:#DC2626;border:1px solid #FECACA;
+  border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;
+}
+.ped-edit-sinstock-btn:hover{ background:#FECACA; }
+.ped-edit-restore-btn{
+  padding:4px 10px;background:#F0FDF4;color:#059669;border:1px solid #A7F3D0;
+  border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;
+}
+.ped-edit-restore-btn:hover{ background:#D1FAE5; }
+.pm-btn-edit{
+  background:#EFF6FF;color:#1D4ED8;border:1.5px solid #BFDBFE;
+  padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .15s;
+}
+.pm-btn-edit:hover{ background:#DBEAFE; }
+
+/* ── INGRESO DE MERCADERÍA ────────────────────────────────────────────────── */
+.ing-toolbar{ display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;background:#F8FAFC;border-bottom:1px solid #E5E7EB; }
+.ing-search{ padding:9px 14px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;min-width:260px;transition:border-color .15s; }
+.ing-search:focus{ border-color:#CC0000; }
+.ing-card{
+  border:1.5px solid #E5E7EB;border-radius:12px;margin-bottom:14px;
+  overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.ing-card-head{
+  background:#F8FAFC;padding:12px 16px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid #E5E7EB;flex-wrap:wrap;
+}
+.ing-art-code{ font-family:monospace;font-weight:800;font-size:15px;color:#1E3A5F; }
+.ing-art-desc{ font-size:13px;color:#374151;flex:1; }
+.ing-art-badge{ background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;white-space:nowrap; }
+.ing-compradores{ padding:8px 0; }
+.ing-comprador-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 16px;border-bottom:1px solid #F9FAFB;flex-wrap:wrap;
+}
+.ing-comprador-row:last-child{ border-bottom:none; }
+.ing-comprador-info{ display:flex;flex-direction:column;gap:2px;flex:1; }
+.ing-comprador-name{ font-size:13px;font-weight:700;color:#1A1A1A; }
+.ing-comprador-det{ font-size:11px;color:#9CA3AF; }
+.ing-comprador-btns{ display:flex;gap:8px;align-items:center;flex-wrap:wrap; }
+.ing-btn{ padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;white-space:nowrap;text-decoration:none; }
+.ing-btn-wa{ background:#25D366;color:#fff;display:inline-flex;align-items:center;gap:4px; }
+.ing-btn-wa:hover{ background:#1ebe5d; }
+.ing-btn-ok{ background:#F0FDF4;color:#059669;border:1.5px solid #A7F3D0; }
+.ing-btn-ok:hover{ background:#D1FAE5; }
+.ing-btn-ok:disabled{ opacity:.5;cursor:default; }
+
+/* ── DASHBOARD CARD NARANJA ───────────────────────────────────────────────── */
+.dash-card-orange{ background:#FFF7ED;border:1.5px solid #FED7AA; }
+.dash-card-orange .dash-card-num{ color:#EA580C; }
 
 /* ── RESPONSIVE MOBILE ──────────────────────────────────────────────────── */
 @media(max-width:640px){
@@ -2959,8 +3053,36 @@ async function pedCargar(){
 }
 
 function pedRender(){
-  var filtro = (document.getElementById('ped-filtro-estado')||{value:''}).value;
-  var lista = filtro ? PED_CACHE.filter(function(p){ return p.estado===filtro; }) : PED_CACHE;
+  var filtro  = (document.getElementById('ped-filtro-estado')||{value:''}).value;
+  var q       = ((document.getElementById('ped-search')||{value:''}).value||'').toLowerCase().trim();
+  var fFecha  = (document.getElementById('ped-filtro-fecha')||{value:''}).value;
+  var hoy = new Date().toLocaleDateString('es-AR');
+  var lista = PED_CACHE.filter(function(p){
+    if(filtro && p.estado !== filtro) return false;
+    if(q){
+      var hayQ = (p.numero||'').toLowerCase().indexOf(q)>=0
+        || (p.cliente||'').toLowerCase().indexOf(q)>=0
+        || (p.usuario||'').toLowerCase().indexOf(q)>=0
+        || (p.email||'').toLowerCase().indexOf(q)>=0;
+      if(!hayQ) return false;
+    }
+    if(fFecha === 'hoy' && (p.fecha||'').indexOf(hoy) < 0) return false;
+    if(fFecha === 'semana'){
+      var d = new Date(); d.setDate(d.getDate()-7);
+      // comparación simple por número de pedido como proxy de fecha
+      var nroNum = parseInt((p.numero||'').replace(/\D/g,'').slice(-6));
+      var cutoff = parseInt(d.toLocaleDateString('es-AR').replace(/\D/g,'').split('').reverse().join(''));
+      // Si tiene fecha en formato string la usamos directamente
+      if(p.fecha && p.fecha.indexOf('/') >= 0){
+        var parts = p.fecha.split(/[\/ :]/);
+        try{
+          var dp = new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+          if(dp < d) return false;
+        }catch(e){}
+      }
+    }
+    return true;
+  });
   if(lista.length===0){
     document.getElementById('ped-list').innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">No hay pedidos' + (filtro?' con estado "'+filtro+'"':'') + '</div>';
     return;
@@ -3000,14 +3122,15 @@ function pedRender(){
       + '<div style="display:flex;gap:8px;flex-wrap:wrap">';
 
     if(p.estado==='Pendiente'){
-      h += '<button class="pm-btn pm-btn-primary" onclick="pedAccion(\''+esc(p.numero)+'\',\'Confirmado\','+idx+')">&#10003; Confirmar stock</button>'
-        + '<button class="pm-btn" style="background:#FEF3C7;color:#92400E;border:none;cursor:pointer;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600" onclick="pedAccion(\''+esc(p.numero)+'\',\'Rechazado\','+idx+')">&#10007; Rechazar</button>';
+      h += '<button class="pm-btn pm-btn-primary" onclick="pedAccion(\''+esc(p.numero)+'\',\'Confirmado\',-1)">&#10003; Confirmar todo</button>'
+        + '<button class="pm-btn pm-btn-edit" onclick="pedAbrirEditorPorNro(\''+esc(p.numero)+'\')">&#9998; Editar pedido</button>'
+        + '<button class="pm-btn" style="background:#FEF3C7;color:#92400E;border:none;cursor:pointer;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600" onclick="pedAccion(\''+esc(p.numero)+'\',\'Rechazado\',-1)">&#10007; Rechazar</button>';
     } else if(p.estado==='Confirmado'){
-      h += '<button class="pm-btn pm-btn-secondary" onclick="pedAccion(\''+esc(p.numero)+'\',\'Enviado\','+idx+')">&#128666; Marcar enviado</button>';
+      h += '<button class="pm-btn pm-btn-secondary" onclick="pedAccion(\''+esc(p.numero)+'\',\'Enviado\',-1)">&#128666; Marcar enviado</button>';
     } else if(p.estado==='Enviado'){
-      h += '<button class="pm-btn pm-btn-secondary" onclick="pedAccion(\''+esc(p.numero)+'\',\'Entregado\','+idx+')">&#128230; Marcar entregado</button>';
+      h += '<button class="pm-btn pm-btn-secondary" onclick="pedAccion(\''+esc(p.numero)+'\',\'Entregado\',-1)">&#128230; Marcar entregado</button>';
     }
-    h += '<button class="pm-btn pm-btn-secondary" onclick="pedVerDetalle('+idx+')">&#128269; Ver completo</button>';
+    h += '<button class="pm-btn pm-btn-secondary" onclick="pedVerDetalleNro(\''+esc(p.numero)+'\')">&#128269; Ver completo</button>';
     h += '</div></div>';
   });
   document.getElementById('ped-list').innerHTML = h;
@@ -3039,6 +3162,11 @@ async function pedAccion(nro, nuevoEstado, idx){
   }catch(e){}
   pedRender();
   pmToast('✅ Pedido '+nro+' → '+nuevoEstado);
+}
+
+function pedVerDetalleNro(nro){
+  var idx = PED_CACHE.findIndex(function(p){ return p.numero === nro; });
+  if(idx >= 0) pedVerDetalle(idx);
 }
 
 function pedVerDetalle(idx){
@@ -3201,15 +3329,21 @@ var DASH_PEDIDOS = [];
 async function dashCargar(){
   document.getElementById('dash-pend-list').innerHTML =
     '<div style="text-align:center;padding:30px;color:#9CA3AF">&#8635; Cargando pedidos...</div>';
-  try{
-    var res = await apiSheets('getPedidos', {});
-    if(res && res.data) DASH_PEDIDOS = res.data;
-    else throw new Error('sin data');
-  }catch(e){
-    try{ DASH_PEDIDOS = JSON.parse(localStorage.getItem('rag_pedidos_v1')||'[]'); }catch(ex){ DASH_PEDIDOS=[]; }
-  }
-  // Sincronizar también con PED_CACHE del tab Pedidos
+  var [resPed, resPendStock] = await Promise.allSettled([
+    apiSheets('getPedidos', {}),
+    apiSheets('getPendientesStock', {})
+  ]);
+  if(resPed.status==='fulfilled' && resPed.value && resPed.value.data)
+    DASH_PEDIDOS = resPed.value.data;
+  else{ try{ DASH_PEDIDOS = JSON.parse(localStorage.getItem('rag_pedidos_v1')||'[]'); }catch(ex){ DASH_PEDIDOS=[]; } }
   PED_CACHE = DASH_PEDIDOS;
+  if(resPendStock.status==='fulfilled' && resPendStock.value && resPendStock.value.data){
+    ING_CACHE = resPendStock.value.data.filter(function(r){ return (r.estado||'').toLowerCase()==='pendiente'; });
+  }
+  var badge = document.getElementById('dash-stock-count');
+  if(badge) badge.textContent = ING_CACHE.length;
+  var ingBadge = document.getElementById('ing-badge');
+  if(ingBadge){ ingBadge.textContent=ING_CACHE.length; ingBadge.style.display=ING_CACHE.length>0?'inline':'none'; }
   dashRender();
 }
 
@@ -3263,7 +3397,8 @@ function dashRender(){
       + '<div class="ped-total">Total: $ '+Number(p.total||0).toLocaleString('es-AR',{minimumFractionDigits:0})+'</div>'
       + (p.notas?'<div style="font-size:12px;color:#6B7280;margin-top:4px">Obs.: '+esc(p.notas)+'</div>':'')
       + '<div style="display:flex;gap:0;flex-wrap:wrap">'
-        + '<button class="dash-confirm-btn" id="dashbtn-'+nro+'" onclick="dashConfirmar(\''+nro+'\')">&#10003; Confirmar stock del pedido</button>'
+        + '<button class="dash-confirm-btn" id="dashbtn-'+nro+'" onclick="dashConfirmar(\''+nro+'\')">&#10003; Confirmar todo</button>'
+        + '<button class="dash-edit-btn" onclick="pedAbrirEditorPorNro(\''+nro+'\')">&#9998; Editar</button>'
         + '<button class="dash-reject-btn" onclick="dashRechazar(\''+nro+'\')">&#10007; Rechazar</button>'
       + '</div>'
     + '</div>';
@@ -3292,6 +3427,261 @@ async function dashRechazar(nro){
 function dashScrollPendientes(){
   var el = document.getElementById('dash-pend-list');
   if(el) el.scrollIntoView({ behavior:'smooth' });
+}
+
+// ── EDITOR DE PEDIDO (ADMIN) ──────────────────────────────────────────────
+var PED_EDIT_IDX = -1;
+var PED_EDIT_PENDIENTES = {};
+
+function pedAbrirEditorPorNro(nro){
+  var idx = PED_CACHE.findIndex(function(p){ return p.numero === nro; });
+  if(idx >= 0) pedAbrirEditor(idx);
+}
+
+function pedAbrirEditor(idx){
+  var p = PED_CACHE[idx];
+  if(!p) return;
+  PED_EDIT_IDX = idx;
+  PED_EDIT_PENDIENTES = {};
+  var items = [];
+  try{ items = Array.isArray(p.items) ? p.items : JSON.parse(p.items||'[]'); }catch(e){}
+  document.getElementById('ped-edit-nro').textContent = p.numero || '';
+  document.getElementById('ped-edit-cliente').textContent = (p.cliente||p.usuario||'');
+  pedRenderEditorItems(items);
+  document.getElementById('ped-edit-modal').style.display = 'flex';
+}
+
+function cerrarPedEditor(){
+  document.getElementById('ped-edit-modal').style.display = 'none';
+  PED_EDIT_IDX = -1;
+  PED_EDIT_PENDIENTES = {};
+}
+
+function pedRenderEditorItems(items){
+  var tbody = document.getElementById('ped-edit-tbody');
+  if(!items || !items.length){
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:16px;text-align:center;color:#9CA3AF">Sin artículos</td></tr>';
+    pedActualizarTotalesEditor(items || []);
+    return;
+  }
+  tbody.innerHTML = items.map(function(i, n){
+    var isPend = !!PED_EDIT_PENDIENTES[n];
+    return '<tr class="ped-edit-row'+(isPend?' pend':'')+'" id="ped-erow-'+n+'">'
+      +'<td style="padding:8px 10px;font-weight:800;font-family:monospace;color:#1E3A5F;white-space:nowrap">'+esc(i.id||'')+'</td>'
+      +'<td style="padding:8px 10px;color:#374151">'+esc(i.desc||i.nombre||'')+'</td>'
+      +'<td style="padding:8px 10px;text-align:center;font-weight:700">'+esc(String(i.qty||1))+'</td>'
+      +'<td style="padding:8px 10px;text-align:right;color:#059669;font-weight:700;white-space:nowrap">$ '+Number(i.precioTotal||0).toLocaleString('es-AR',{minimumFractionDigits:0})+'</td>'
+      +'<td style="padding:8px 10px;text-align:center">'
+        +(isPend
+          ? '<button class="ped-edit-restore-btn" onclick="pedTogglePendiente('+n+')">&#8617; Restaurar</button>'
+          : '<button class="ped-edit-sinstock-btn" onclick="pedTogglePendiente('+n+')">Sin stock</button>'
+        )
+      +'</td>'
+    +'</tr>';
+  }).join('');
+  pedActualizarTotalesEditor(items);
+}
+
+function pedTogglePendiente(n){
+  var p = PED_CACHE[PED_EDIT_IDX];
+  if(!p) return;
+  var items = [];
+  try{ items = Array.isArray(p.items) ? p.items : JSON.parse(p.items||'[]'); }catch(e){}
+  PED_EDIT_PENDIENTES[n] = !PED_EDIT_PENDIENTES[n];
+  pedRenderEditorItems(items);
+}
+
+function pedActualizarTotalesEditor(items){
+  var totalOK = 0, totalPend = 0, cntOK = 0, cntPend = 0;
+  items.forEach(function(i, n){
+    if(PED_EDIT_PENDIENTES[n]){ totalPend += Number(i.precioTotal||0); cntPend++; }
+    else { totalOK += Number(i.precioTotal||0); cntOK++; }
+  });
+  var el = document.getElementById('ped-edit-totals');
+  var confirmBtn = document.getElementById('ped-edit-confirm-btn');
+  if(el){
+    var h = '<div style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 0;border-top:2px solid #E5E7EB;margin-top:6px">';
+    h += '<span style="font-size:13px;color:#059669;font-weight:700">&#10003; Confirmados: '+cntOK+' art. &mdash; $ '+totalOK.toLocaleString('es-AR',{minimumFractionDigits:0})+'</span>';
+    if(cntPend > 0) h += '<span style="font-size:13px;color:#D97706;font-weight:700">&#9203; Sin stock: '+cntPend+' art. &mdash; $ '+totalPend.toLocaleString('es-AR',{minimumFractionDigits:0})+'</span>';
+    h += '</div>';
+    el.innerHTML = h;
+  }
+  if(confirmBtn) confirmBtn.disabled = (cntOK === 0);
+}
+
+async function pedConfirmarEdicion(){
+  var p = PED_CACHE[PED_EDIT_IDX];
+  if(!p) return;
+  var items = [];
+  try{ items = Array.isArray(p.items) ? p.items : JSON.parse(p.items||'[]'); }catch(e){}
+
+  var itemsOK = [], itemsPend = [];
+  items.forEach(function(i, n){
+    if(PED_EDIT_PENDIENTES[n]) itemsPend.push(i);
+    else itemsOK.push(i);
+  });
+
+  if(itemsOK.length === 0){
+    pmToast('No puede quedar sin artículos. Si no tiene stock, usá "Rechazar".');
+    return;
+  }
+
+  var btn = document.getElementById('ped-edit-confirm-btn');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+
+  var nuevoTotal = itemsOK.reduce(function(s, i){ return s + Number(i.precioTotal||0); }, 0);
+
+  try{
+    var res = await apiSheets('editarPedido', {
+      numero: p.numero,
+      items_confirmados: JSON.stringify(itemsOK),
+      items_pendientes: JSON.stringify(itemsPend),
+      total_confirmado: nuevoTotal,
+      estado: 'Confirmado'
+    });
+    if(!res || !res.ok){
+      pmToast('✗ Error: ' + (res && res.msg || 'Sin respuesta'));
+      btn.disabled = false; btn.textContent = '✓ Confirmar';
+      return;
+    }
+
+    if(itemsPend.length > 0){
+      var filasPend = itemsPend.map(function(i){
+        return {
+          id_articulo: i.id,
+          descripcion: i.desc || i.nombre || '',
+          qty: i.qty || 1,
+          nro_pedido: p.numero,
+          cliente: p.cliente || p.usuario || '',
+          usuario: p.usuario || '',
+          email: p.email || '',
+          tel: p.tel || '',
+          fecha_pedido: p.fecha || '',
+          estado: 'pendiente'
+        };
+      });
+      await apiSheets('savePendientesStock', { filas: filasPend });
+    }
+  }catch(e){
+    pmToast('✗ Sin conexión con Sheets');
+    btn.disabled = false; btn.textContent = '✓ Confirmar';
+    return;
+  }
+
+  // Actualizar caché local
+  p.estado = 'Confirmado';
+  p.items = JSON.stringify(itemsOK);
+  p.total = nuevoTotal;
+  p.items_pendientes = JSON.stringify(itemsPend);
+  try{
+    var hist = JSON.parse(localStorage.getItem('rag_pedidos_v1')||'[]');
+    hist.forEach(function(x){ if(x.numero===p.numero){ x.estado='Confirmado'; x.items=p.items; x.total=nuevoTotal; } });
+    localStorage.setItem('rag_pedidos_v1', JSON.stringify(hist));
+  }catch(e){}
+
+  // WhatsApp al cliente
+  var waNum = (p.tel||'').replace(/\D/g,'');
+  if(waNum && waNum.length >= 8){
+    var waLines = itemsOK.map(function(i){ return '✓ '+i.qty+'x ['+i.id+'] '+(i.desc||i.nombre||''); }).join('\n');
+    var waPend  = itemsPend.map(function(i){ return '⏳ '+i.qty+'x ['+i.id+'] '+(i.desc||i.nombre||''); }).join('\n');
+    var waMsg = 'Hola '+(p.cliente||p.usuario)+'! Tu pedido '+p.numero+' fue procesado.\n\n'
+      + (itemsOK.length ? 'Artículos confirmados:\n'+waLines+'\n' : '')
+      + (itemsPend.length ? '\nArtículos sin stock (te avisamos cuando lleguen):\n'+waPend+'\n' : '')
+      + '\nTotal confirmado: $ '+nuevoTotal.toLocaleString('es-AR',{minimumFractionDigits:0})
+      + '\n\nCualquier consulta estamos a tu disposición.';
+    setTimeout(function(){ window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(waMsg), '_blank'); }, 400);
+  }
+
+  cerrarPedEditor();
+  pedRender();
+  DASH_PEDIDOS = PED_CACHE; dashRender();
+  pmToast('✅ Pedido '+p.numero+' confirmado'+(itemsPend.length?' — '+itemsPend.length+' art. quedaron pendientes de stock':''));
+}
+
+// ── INGRESO DE MERCADERÍA ─────────────────────────────────────────────────
+var ING_CACHE = [];
+
+async function ingCargar(){
+  var el = document.getElementById('ing-results');
+  if(el) el.innerHTML = '<div style="padding:30px;text-align:center;color:#9CA3AF">&#8635; Cargando artículos pendientes...</div>';
+  try{
+    var res = await apiSheets('getPendientesStock', {});
+    if(res && res.data) ING_CACHE = res.data.filter(function(r){ return (r.estado||'').toLowerCase() === 'pendiente'; });
+    else throw new Error('sin data');
+  }catch(e){ ING_CACHE = []; }
+  ingRender(ING_CACHE);
+  // Actualizar badge dashboard
+  var badge = document.getElementById('dash-stock-count');
+  if(badge) badge.textContent = ING_CACHE.length;
+}
+
+function ingBuscar(){
+  var q = (document.getElementById('ing-search').value||'').toLowerCase().trim();
+  var filtered = q ? ING_CACHE.filter(function(r){
+    return (r.id_articulo||'').toLowerCase().indexOf(q)>=0
+      || (r.descripcion||'').toLowerCase().indexOf(q)>=0
+      || (r.cliente||'').toLowerCase().indexOf(q)>=0;
+  }) : ING_CACHE;
+  ingRender(filtered);
+}
+
+function ingRender(lista){
+  var el = document.getElementById('ing-results');
+  if(!el) return;
+  if(!lista.length){
+    el.innerHTML = '<div style="padding:50px;text-align:center;color:#059669;font-size:14px;font-weight:700">&#10003; No hay artículos pendientes de stock</div>';
+    return;
+  }
+  // Agrupar por id_articulo
+  var grupos = {};
+  lista.forEach(function(r){
+    var k = (r.id_articulo||'?');
+    if(!grupos[k]) grupos[k] = { id: k, desc: r.descripcion||'', filas: [] };
+    grupos[k].filas.push(r);
+  });
+
+  var h = '';
+  Object.values(grupos).forEach(function(g){
+    h += '<div class="ing-card">'
+      +'<div class="ing-card-head">'
+        +'<span class="ing-art-code">'+esc(g.id)+'</span>'
+        +'<span class="ing-art-desc">'+esc(g.desc)+'</span>'
+        +'<span class="ing-art-badge">'+g.filas.length+' comprador'+(g.filas.length>1?'es':'')+'</span>'
+      +'</div>'
+      +'<div class="ing-compradores">';
+    g.filas.forEach(function(r){
+      var waNum = (r.tel||'').replace(/\D/g,'');
+      var waMsg = 'Hola '+(r.cliente||r.usuario)+'! El artículo ['+(r.id_articulo||'')+'] '+(r.descripcion||'')+' de tu pedido '+(r.nro_pedido||'')+' ya llegó al local. Podes pasar a retirarlo o coordinar el envío.';
+      var waUrl = waNum.length>=8 ? 'https://wa.me/'+waNum+'?text='+encodeURIComponent(waMsg) : '';
+      h += '<div class="ing-comprador-row">'
+        +'<div class="ing-comprador-info">'
+          +'<span class="ing-comprador-name">'+esc(r.cliente||r.usuario||'')+'</span>'
+          +'<span class="ing-comprador-det">Pedido&nbsp;'+esc(r.nro_pedido||'')+'&nbsp;&mdash;&nbsp;'+esc(String(r.qty||1))+'&nbsp;un.&nbsp;&mdash;&nbsp;'+esc(r.fecha_pedido||'')+'</span>'
+        +'</div>'
+        +'<div class="ing-comprador-btns">'
+          +(waUrl?'<a href="'+waUrl+'" target="_blank" class="ing-btn ing-btn-wa">&#128172; Notificar</a>':'')
+          +'<button class="ing-btn ing-btn-ok" onclick="ingMarcarEntregado(\''+esc(r.id_articulo)+'\',\''+esc(r.nro_pedido)+'\',this)">&#10003; Entregado</button>'
+        +'</div>'
+      +'</div>';
+    });
+    h += '</div></div>';
+  });
+  el.innerHTML = h;
+}
+
+async function ingMarcarEntregado(idArt, nroPed, btn){
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try{
+    await apiSheets('updatePendienteStock', { id_articulo: idArt, nro_pedido: nroPed, estado: 'entregado' });
+    ING_CACHE = ING_CACHE.filter(function(r){ return !(r.id_articulo===idArt && r.nro_pedido===nroPed); });
+    ingRender(ING_CACHE);
+    var badge = document.getElementById('dash-stock-count');
+    if(badge) badge.textContent = ING_CACHE.length;
+    pmToast('✅ Artículo '+idArt+' marcado como entregado');
+  }catch(e){
+    btn.disabled = false; btn.textContent = '✓ Entregado';
+    pmToast('✗ Error al guardar');
+  }
 }
 
 // Cargar dashboard automáticamente al abrir el panel admin
@@ -3803,19 +4193,28 @@ async function clcRenderHistorial(){
     var statusClass = STATUS_CLASS[statusKey] || 'pendiente';
     var items = [];
     try{ items = JSON.parse(p.items||'[]'); }catch(e){}
+    var itemsPend = [];
+    try{ if(p.items_pendientes) itemsPend = JSON.parse(p.items_pendientes||'[]'); }catch(e){}
     var resumen = items.slice(0,3).map(function(i){ return i.qty+'x '+i.desc.substring(0,30); }).join(', ');
     if(items.length>3) resumen += ' y '+(items.length-3)+' m\u00e1s';
     var nroEsc = esc(p.numero||p.nro||'S/N');
+    var statusLabel = p.estado||'Pendiente';
+    if(statusLabel === 'Confirmado' && itemsPend.length > 0) statusLabel = 'Confirmado parcial';
     html += '<div class="clcfg-order-card">' +
       '<div class="clcfg-order-head">' +
         '<span class="clcfg-order-num">' + nroEsc + '</span>' +
         '<span class="clcfg-order-date">' + esc(p.fecha||'') + '</span>' +
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">' +
-        '<span class="clcfg-order-status clcfg-status-' + statusClass + '">' + (p.estado||'Pendiente') + '</span>' +
+        '<span class="clcfg-order-status clcfg-status-' + statusClass + '">' + esc(statusLabel) + '</span>' +
         '<button onclick="imprimirPedido('+_myIdx+')" style="font-size:11px;padding:3px 10px;border:1px solid #D1D5DB;border-radius:6px;background:#fff;cursor:pointer;color:#374151">&#128438; PDF</button>' +
       '</div>' +
       '<div class="clcfg-order-items">' + esc(resumen) + '</div>' +
+      (itemsPend.length ? '<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:8px 12px;margin-top:6px;font-size:12px;color:#92400E">'
+        + '&#9203; <strong>Pendientes de stock:</strong> '
+        + itemsPend.map(function(i){ return i.qty+'x ['+i.id+'] '+(i.desc||'').substring(0,30); }).join(' &mdash; ')
+        + '<br><span style="font-size:11px;color:#B45309">Te avisamos por WhatsApp cuando lleguen.</span>'
+        + '</div>' : '') +
       '<div class="clcfg-order-total">Total: $ ' + (p.total ? Number(p.total).toLocaleString('es-AR',{minimumFractionDigits:0}) : 'Consultar') + '</div>' +
       '<div style="font-size:11px;color:#9CA3AF;margin-top:4px">' +
         'Env\u00edo: ' + esc(p.envio||'') +
@@ -5678,7 +6077,8 @@ function ceGuardarEnArchivoManual(){
         <button class="admin-tab active" onclick="adminSwitchTab('tab-dashboard',this);dashRender()">&#127968; Dashboard</button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-precios',this)">&#128176; Precios</button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-clientes',this)">&#128100; Clientes</button>
-        <button class="admin-tab" id="tab-pedidos-btn" onclick="adminSwitchTab('tab-pedidos',this);pedRender()">&#128203; Todos los pedidos <span id="ped-badge" style="display:none;background:#CC0000;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
+        <button class="admin-tab" id="tab-pedidos-btn" onclick="adminSwitchTab('tab-pedidos',this);pedRender()">&#128203; Pedidos <span id="ped-badge" style="display:none;background:#CC0000;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
+        <button class="admin-tab" onclick="adminSwitchTab('tab-ingresos',this);ingCargar()">&#128230; Ingreso mercader&iacute;a <span id="ing-badge" style="display:none;background:#EA580C;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-catalogo',this);ceInicializar()">&#9999; Editor Cat&aacute;logo</button>
         <button class="admin-tab" id="tab-ghconfig-btn" onclick="adminSwitchTab('tab-ghconfig',this);ghRenderConfig()">&#9881; Configuraci&oacute;n</button>
       </div>
@@ -5706,6 +6106,13 @@ function ceGuardarEnArchivoManual(){
               <div>
                 <div class="dash-card-num" id="dash-conf-count">—</div>
                 <div class="dash-card-label">Confirmados hoy</div>
+              </div>
+            </div>
+            <div class="dash-card dash-card-orange" onclick="adminSwitchTab('tab-ingresos',document.querySelectorAll('.admin-tab')[4]);ingCargar()" style="cursor:pointer">
+              <div class="dash-card-icon">&#9203;</div>
+              <div>
+                <div class="dash-card-num" id="dash-stock-count">—</div>
+                <div class="dash-card-label">Art. pendientes stock</div>
               </div>
             </div>
             <div class="dash-card dash-card-blue">
@@ -5796,6 +6203,7 @@ function ceGuardarEnArchivoManual(){
       <div class="admin-tab-panel" id="tab-pedidos">
         <div class="pm-toolbar">
           <span class="pm-toolbar-title">&#128203; Gesti&#243;n de Pedidos</span>
+          <input type="text" class="pm-search" id="ped-search" placeholder="&#128269; Buscar cliente, n&uacute;mero..." oninput="pedRender()" style="min-width:200px">
           <select class="pm-filter-sel" id="ped-filtro-estado" onchange="pedRender()">
             <option value="">Todos los estados</option>
             <option value="Pendiente" selected>Pendientes</option>
@@ -5804,10 +6212,30 @@ function ceGuardarEnArchivoManual(){
             <option value="Entregado">Entregados</option>
             <option value="Rechazado">Rechazados</option>
           </select>
+          <select class="pm-filter-sel" id="ped-filtro-fecha" onchange="pedRender()">
+            <option value="">Todas las fechas</option>
+            <option value="hoy">Hoy</option>
+            <option value="semana">Esta semana</option>
+          </select>
           <button class="pm-btn pm-btn-secondary" onclick="pedCargar()">&#8635; Actualizar</button>
         </div>
-        <div id="ped-list" style="padding:12px;overflow-y:auto;max-height:55vh"></div>
+        <div id="ped-list" style="padding:12px;overflow-y:auto;max-height:calc(100vh - 260px)"></div>
       </div><!-- /tab-pedidos -->
+
+      <!-- TAB INGRESO DE MERCADERÍA -->
+      <div class="admin-tab-panel" id="tab-ingresos">
+        <div class="ing-toolbar">
+          <span class="pm-toolbar-title">&#128230; Ingreso de mercader&iacute;a</span>
+          <input type="text" class="ing-search" id="ing-search" placeholder="&#128269; Buscar por c&oacute;digo, descripci&oacute;n o cliente..." oninput="ingBuscar()">
+          <button class="pm-btn pm-btn-secondary" onclick="ingCargar()">&#8635; Actualizar</button>
+        </div>
+        <div style="padding:14px">
+          <div style="font-size:12px;color:#9CA3AF;margin-bottom:12px">Los art&iacute;culos aparecen aqu&iacute; cuando el admin los marc&oacute; como sin stock al confirmar un pedido. Notific&aacute; al comprador cuando el art&iacute;culo llega al local.</div>
+          <div id="ing-results">
+            <div style="padding:40px;text-align:center;color:#9CA3AF">Abriendo tab...</div>
+          </div>
+        </div>
+      </div><!-- /tab-ingresos -->
 
       <!-- TAB EDITOR CATÁLOGO -->
       <div class="admin-tab-panel" id="tab-catalogo">
@@ -5956,6 +6384,46 @@ function ceGuardarEnArchivoManual(){
       <div style="display:flex;gap:10px">
         <button class="pm-btn pm-btn-secondary" onclick="pmDescartar()">Descartar</button>
         <button class="pm-btn pm-btn-green" onclick="pmGuardar()">&#128190; Guardar todo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITOR DE PEDIDO -->
+<div id="ped-edit-modal">
+  <div class="ped-edit-box">
+    <div class="ped-edit-header">
+      <div>
+        <span>&#9998; Editar pedido&nbsp;<strong id="ped-edit-nro"></strong></span>
+        <span style="font-size:12px;opacity:.7;margin-left:10px" id="ped-edit-cliente"></span>
+      </div>
+      <button onclick="cerrarPedEditor()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:24px;cursor:pointer;line-height:1;padding:2px 6px">&#215;</button>
+    </div>
+    <div class="ped-edit-body">
+      <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:10px 14px;font-size:12px;color:#1E40AF;margin-bottom:14px">
+        &#8505; Marc&aacute; los art&iacute;culos que no tienen stock. Quedar&aacute;n registrados y se le avisar&aacute; al comprador por WhatsApp cuando lleguen.
+      </div>
+      <div style="overflow-x:auto">
+        <table class="ped-edit-table">
+          <thead>
+            <tr>
+              <th>C&oacute;digo</th>
+              <th>Descripci&oacute;n</th>
+              <th style="text-align:center">Cant.</th>
+              <th style="text-align:right">Subtotal</th>
+              <th style="text-align:center">Stock</th>
+            </tr>
+          </thead>
+          <tbody id="ped-edit-tbody"></tbody>
+        </table>
+      </div>
+      <div id="ped-edit-totals"></div>
+    </div>
+    <div class="ped-edit-footer">
+      <span style="font-size:12px;color:#9CA3AF">Los art. sin stock quedan pendientes hasta que llegue mercader&iacute;a</span>
+      <div style="display:flex;gap:10px">
+        <button class="pm-btn pm-btn-secondary" onclick="cerrarPedEditor()">Cancelar</button>
+        <button class="pm-btn pm-btn-primary" id="ped-edit-confirm-btn" onclick="pedConfirmarEdicion()">&#10003; Confirmar</button>
       </div>
     </div>
   </div>
