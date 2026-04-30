@@ -1591,9 +1591,14 @@ function openModal(id){
   var imgList = [];
   if(p.marca === 'TEXTAR'){
     imgList.push(getImgSrc('TEXTAR', imgIdM, 1));
-  } else if(p.marca === 'KS' || p.marca === 'PIERBURG' || p.marca === 'TRW' || p.marca === 'TRW Engine Components' || p.marca === 'BOGAP'){
+  } else if(p.marca === 'KS' || p.marca === 'PIERBURG' || p.marca === 'TRW' || p.marca === 'TRW Engine Components'){
     // Una sola imagen: usar p.img si existe, sino getImgSrc
     imgList.push(p.img || getImgSrc(p.marca, imgIdM, 1));
+  } else if(p.marca === 'BOGAP'){
+    // Imagen principal + extra numeradas _img2.._img6
+    var bogBase = IMG_BASES[0];
+    imgList.push(p.img || (bogBase + 'Bogap/' + imgIdM + '.jpg'));
+    for(var gi=2;gi<=6;gi++){ imgList.push(bogBase + 'Bogap/' + imgIdM + '_img' + gi + '.jpg'); }
   } else {
     // Febi/BP: probar img1 a img6, se detectan on error en el DOM
     for(var gi=1;gi<=6;gi++){
