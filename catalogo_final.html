@@ -1092,10 +1092,17 @@ select:focus{border-color:#CC0000}
     <div class="cats" id="cats">
       <button class="cbtn on" data-c="">Todas</button>
       <button class="cbtn" data-c="Motor">Motor</button>
-      <button class="cbtn" data-c="Suspensión">Suspensión</button>
+      <button class="cbtn" data-c="Suspensión / Dirección">Suspensión / Dirección</button>
       <button class="cbtn" data-c="Frenos">Frenos</button>
-      <button class="cbtn" data-c="Cambio">Cambio</button>
-      <button class="cbtn" data-c="Dirección">Dirección</button>
+      <button class="cbtn" data-c="Mantenimiento">Mantenimiento</button>
+      <button class="cbtn" data-c="Distribución / Correas">Distribución / Correas</button>
+      <button class="cbtn" data-c="Transmisión">Transmisión</button>
+      <button class="cbtn" data-c="Refrigeración">Refrigeración</button>
+      <button class="cbtn" data-c="Sensores / Electrónica">Sensores / Electrónica</button>
+      <button class="cbtn" data-c="Juntas">Juntas</button>
+      <button class="cbtn" data-c="Lubricantes y Fluidos">Lubricantes y Fluidos</button>
+      <button class="cbtn" data-c="Bombas">Bombas</button>
+      <button class="cbtn" data-c="Carrocería">Carrocería</button>
       <button class="cbtn" data-c="Embrague">Embrague</button>
     </div>
     <a href="https://wa.me/5491162770520" target="_blank" rel="noopener" title="Contactanos por WhatsApp" style="margin-left:auto;display:flex;align-items:center;gap:7px;background:#25D366;color:#fff;text-decoration:none;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
@@ -1166,19 +1173,7 @@ function esc(s){
   return d.innerHTML;
 }
 
-var ICONS={
-  "Refrigeracion / Mantenimiento":"&#127777;",
-  "Suspension":"&#128295;",
-  "Motor":"&#9881;",
-  "Transmision / Correas":"&#128279;",
-  "Electricidad / Sensores":"&#9889;",
-  "Tornilleria / Fijaciones":"&#128297;",
-  "Frenos / ABS":"&#128721;",
-  "Direccion":"&#127919;",
-  "Kits":"&#128230;",
-  "Embrague":"&#128260;",
-  "Electricidad":"&#128161;"
-};
+var ICONS={};
 var PER=24,curPg=1,curQ="",curCat="",curVeh="",curMod="",curSub="",curMot="",curTipo="",curMarcaRep="",curFav=false;
 
 // ── FAVORITOS ──────────────────────────────────────────────────────────────
@@ -6505,9 +6500,11 @@ function ceGuardarEnArchivoManual(){
               <div class="ce-field">
                 <label>Categor&iacute;a</label>
                 <select id="ce-edit-cat">
-                  <option>Motor</option><option>Suspensi&oacute;n</option><option>Frenos</option>
-                  <option>Cambio</option><option>Direcci&oacute;n</option><option>Embrague</option>
-                  <option>Otro</option>
+                  <option>Motor</option><option>Suspensi&oacute;n / Direcci&oacute;n</option><option>Frenos</option>
+                  <option>Mantenimiento</option><option>Distribuci&oacute;n / Correas</option><option>Transmisi&oacute;n</option>
+                  <option>Refrigeraci&oacute;n</option><option>Sensores / Electr&oacute;nica</option><option>Juntas</option>
+                  <option>Lubricantes y Fluidos</option><option>Bombas</option><option>Carrocer&iacute;a</option>
+                  <option>Embrague</option><option>Otro</option>
                 </select>
               </div>
               <div class="ce-field">
