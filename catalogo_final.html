@@ -2973,6 +2973,7 @@ async function enviarPedido(){
     pago:      PAGO_LABELS[coPago] || coPago,
     notas:     notas,
     estado:    'Pendiente',
+    catalogo:  'Alta Gama',
   };
 
   // Guardar en Google Sheets + notificar admins
@@ -3146,7 +3147,12 @@ async function pedAccion(nro, nuevoEstado, idx){
   var textoOrig = btn.textContent;
   btn.disabled = true; btn.textContent = 'Guardando...';
   try{
-    var res = await apiSheets('updatePedido', { numero: nro, estado: nuevoEstado });
+    var payload = { numero: nro, estado: nuevoEstado };
+    if(nuevoEstado === 'Confirmado'){
+      var pedRef = PED_CACHE.find(function(x){ return x.numero===nro; });
+      if(pedRef) payload.total_confirmado = pedRef.total;
+    }
+    var res = await apiSheets('updatePedido', payload);
     if(!res || !res.ok){
       pmToast('✗ Error en Sheets: ' + (res && res.msg || 'Sin respuesta'));
       btn.disabled = false; btn.textContent = textoOrig;
