@@ -2499,6 +2499,7 @@ function doLogoutAdmin(){
   document.getElementById('admin-login').style.display='';
   document.getElementById('admin-user-chip').style.display='none';
   document.getElementById('btn-admin-logout').style.display='none';
+  document.getElementById('btn-mapa-talleres').style.display='none';
   document.getElementById('alog-user').value='';
   document.getElementById('alog-pass').value='';
   var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
@@ -2536,6 +2537,7 @@ async function doLogin(){
       document.getElementById('admin-user-chip').style.display='';
       document.getElementById('admin-user-chip').textContent = data.nombre + ' (' + data.nivel + ')';
       document.getElementById('btn-admin-logout').style.display='';
+      document.getElementById('btn-mapa-talleres').style.display='';
       var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
       if(tabPreciosBtn) tabPreciosBtn.style.display = data.nivel === 'owner' ? '' : 'none';
       var tcEl = document.getElementById('tc-controls');
@@ -4337,6 +4339,7 @@ async function doLoginCliente(){
       document.getElementById('admin-user-chip').style.display='';
       document.getElementById('admin-user-chip').textContent = ad.nombre + ' (' + ad.nivel + ')';
       document.getElementById('btn-admin-logout').style.display='';
+      document.getElementById('btn-mapa-talleres').style.display='';
       var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
       if(tabPreciosBtn) tabPreciosBtn.style.display = ad.nivel === 'owner' ? '' : 'none';
       var tcEl = document.getElementById('tc-controls');
@@ -6401,6 +6404,7 @@ function ceGuardarEnArchivoManual(){
         <span class="admin-user-chip" id="admin-user-chip" style="display:none"></span>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
+        <a id="btn-mapa-talleres" href="mapa-talleres/mapa.html" target="_blank" rel="noopener" style="display:none;text-decoration:none;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.8);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit">&#128506; Mapa Talleres</a>
         <button id="btn-admin-logout" onclick="doLogoutAdmin()" style="display:none;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.8);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit" title="Cerrar sesión admin">&#x21BA; Salir</button>
         <button class="admin-close" onclick="cerrarAdmin()">&#215;</button>
       </div>
