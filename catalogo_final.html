@@ -32,6 +32,7 @@ body{background:#F0F2F5;font-family:'DM Sans',sans-serif;min-height:100vh}
 .pill-pierburg{background:#fff}
 .pill-trw{background:#fff}
 .pill-bogap{background:#fff}
+.pill-victorreinz{background:#fff}
 
 h1{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:4px}
 .hsub{color:rgba(255,255,255,.75);font-size:13px}
@@ -942,13 +943,14 @@ select:focus{border-color:#CC0000}
           <span class="brand-pill pill-pierburg" onclick="filtrarMarcaPill('PIERBURG',this)" title="Pierburg"><img src="Imagenes/logos/pierburg.jpg" class="brand-logo-img" alt="Pierburg"></span>
           <span class="brand-pill pill-trw" onclick="filtrarMarcaPill('TRW Engine Components',this)" title="TRW Engine Components"><img src="Imagenes/logos/trw_logo.png" class="brand-logo-img" alt="TRW"></span>
           <span class="brand-pill pill-bogap" onclick="filtrarMarcaPill('BOGAP',this)" title="BOGAP"><img src="Imagenes/logos/bogap_logo.png" class="brand-logo-img" alt="BOGAP"></span>
+          <span class="brand-pill pill-victorreinz" onclick="filtrarMarcaPill('Victor Reinz',this)" title="Victor Reinz"><img src="Imagenes/logos/victor_reinz_logo.png" class="brand-logo-img" alt="Victor Reinz"></span>
         </div>
         <div id="client-header-area">
           <button class="client-login-btn" onclick="abrirLoginCliente()" id="btn-login-cliente">&#128100; Ingresar</button>
         </div>
       </div>
       <h1>Cat&aacute;logo de Autopartes</h1>
-      <p class="hsub"><span id="tc">0</span> art&iacute;culos &nbsp;&middot;&nbsp; FEBI · TEXTAR · KS · PIERBURG · TRW · BOGAP</p>
+      <p class="hsub"><span id="tc">0</span> art&iacute;culos &nbsp;&middot;&nbsp; FEBI · TEXTAR · KS · PIERBURG · TRW · BOGAP · VICTOR REINZ</p>
       <div class="search-wrap autocomplete-wrap">
         <span class="sicon">&#128269;</span>
         <input type="text" id="sb" placeholder="Buscar por c&oacute;digo, descripci&oacute;n, referencia OE o fabricante..." autocomplete="off">
@@ -1092,6 +1094,7 @@ select:focus{border-color:#CC0000}
         <option value="KS">KS</option>
         <option value="PIERBURG">Pierburg</option>
         <option value="BOGAP">BOGAP</option>
+        <option value="Victor Reinz">Victor Reinz</option>
       </select>
     </div>
     <div class="fdiv"></div>
@@ -1291,6 +1294,8 @@ function getImgSrc(marca, id, imgNum){
     return base + 'Bogap/' + id + '.jpg';
   } else if(marca === 'KS' || marca === 'PIERBURG' || marca === 'TRW' || marca === 'TRW Engine Components'){
     return base + 'KS Pierburg TRW/' + id + '.jpg';
+  } else if(marca === 'Victor Reinz'){
+    return base + 'Victor Reinz/' + id + '_img' + (imgNum||1) + '.jpg';
   } else {
     return base + 'Febi/' + id + '_img' + (imgNum||1) + '.jpg';
   }
@@ -1606,6 +1611,9 @@ function openModal(id){
     var bogBase = IMG_BASES[0];
     imgList.push(p.img || (bogBase + 'Bogap/' + imgIdM + '.jpg'));
     for(var gi=2;gi<=6;gi++){ imgList.push(bogBase + 'Bogap/' + imgIdM + '_img' + gi + '.jpg'); }
+  } else if(p.marca === 'Victor Reinz'){
+    // Una sola imagen: usar p.img directamente
+    if(p.img) imgList.push(p.img);
   } else {
     // Febi/BP: probar img1 a img6, se detectan on error en el DOM
     for(var gi=1;gi<=6;gi++){
@@ -6492,7 +6500,7 @@ function ceGuardarEnArchivoManual(){
           <select class="pm-filter-sel" id="pm-fcat" onchange="pmFilter()"><option value="">Todas las categor&#237;as</option></select>
           <button class="pm-btn pm-btn-primary" onclick="pmGuardar()">&#128190; Guardar cambios</button>
           <button class="pm-btn pm-btn-green" onclick="pmPublicarEnWeb()">&#127760; Publicar precios en web</button>
-          <button class="pm-btn pm-btn-secondary" onclick="pmExportarExcel()">&#8595; Descargar Excel</button>
+          <button class="pm-btn pm-btn-secondary" onclick="pmExportarExcel()">&#8595; Descargar Excel</button>
           <button class="pm-btn pm-btn-secondary" onclick="document.getElementById('pm-import-file').click()">&#8593; Importar Excel</button>
           <input type="file" id="pm-import-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="pmImportarExcel(this)">
           <button class="pm-btn pm-btn-secondary" onclick="pmRestaurar()">&#8635; Restaurar originales</button>
