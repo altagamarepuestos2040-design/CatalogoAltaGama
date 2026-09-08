@@ -2313,7 +2313,6 @@ async function cargarPreciosRemoto(){
   } catch(e){}
 }
 cargarPreciosRemoto();
-cargarTiposDeCambio();
 cargarPreciosMoneda();
 
 async function cargarTiposDeCambio(){
@@ -2382,6 +2381,7 @@ function fmtPrecio(p){
 // ── ADMIN AUTH ──────────────────────────────────────────────────────────────────
 var SUPABASE_URL = 'https://psdrpdtvokvylupouyhs.supabase.co';
 var SUPABASE_ANON = 'sb_publishable_y-kO0f1jtl1uDdX2Hpw2YA_HjDUd78R';
+cargarTiposDeCambio();
 var adminActivo = null;
 var adminToken = null;
 
@@ -2423,22 +2423,20 @@ function tcEditar(moneda){
 
 async function tcGuardarMoneda(moneda, val){
   try{
-    var now = new Date().toISOString();
-    var clave = moneda === 'USD' ? 'tipo_cambio_usd' : 'tipo_cambio_eur';
-    var res = await fetch(SUPABASE_URL+'/rest/v1/configuracion',{
+    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/set_tipo_cambio',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
         'apikey':SUPABASE_ANON,
-        'Authorization':'Bearer '+adminToken,
-        'Prefer':'resolution=merge-duplicates,return=minimal'
+        'Authorization':'Bearer '+SUPABASE_ANON
       },
-      body: JSON.stringify([{clave:clave, valor:String(val), updated_at:now}])
+      body: JSON.stringify({p_token: adminToken, p_usd: EXCHANGE_RATES.USD, p_eur: EXCHANGE_RATES.EUR})
     });
-    if(res.ok||res.status===204){
+    var data = res.ok ? await res.json() : null;
+    if(data && data.ok){
       pmToast('✅ ' + moneda + ' $' + val.toLocaleString('es-AR') + ' guardado');
     } else {
-      pmToast('⚠ Error al guardar (' + res.status + '). Verificá la tabla "configuracion" en Supabase.');
+      pmToast('⚠ Error al guardar (' + res.status + '). Verificá la sesión de admin.');
     }
   }catch(e){ pmToast('⚠ Error de conexión'); }
 }
@@ -2466,27 +2464,23 @@ async function tcGuardar(){
   var eur = parseFloat(document.getElementById('tc-eur').value);
   if(isNaN(usd)||usd<=0||isNaN(eur)||eur<=0){ pmToast('⚠ Ingresá valores válidos'); return; }
   if(btn){ var orig=btn.textContent; btn.textContent='⏳'; btn.disabled=true; }
-  var now = new Date().toISOString();
   try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/configuracion',{
+    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/set_tipo_cambio',{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
         'apikey':SUPABASE_ANON,
-        'Authorization':'Bearer '+adminToken,
-        'Prefer':'resolution=merge-duplicates,return=minimal'
+        'Authorization':'Bearer '+SUPABASE_ANON
       },
-      body: JSON.stringify([
-        {clave:'tipo_cambio_usd', valor:String(usd), updated_at:now},
-        {clave:'tipo_cambio_eur', valor:String(eur), updated_at:now}
-      ])
+      body: JSON.stringify({p_token: adminToken, p_usd: usd, p_eur: eur})
     });
-    if(res.ok||res.status===204){
+    var data = res.ok ? await res.json() : null;
+    if(data && data.ok){
       pmToast('✅ T.C. guardado — USD $'+usd.toLocaleString('es-AR')+' · EUR $'+eur.toLocaleString('es-AR'));
       EXCHANGE_RATES.USD=usd; EXCHANGE_RATES.EUR=eur;
       if(typeof render==='function') render();
     } else {
-      pmToast('⚠ Error al guardar ('+res.status+'). Verificá que la tabla "configuracion" existe en Supabase.');
+      pmToast('⚠ Error al guardar ('+res.status+'). Verificá la sesión de admin.');
     }
   } catch(e){ pmToast('⚠ Error de conexión'); }
   if(btn){ btn.textContent=orig; btn.disabled=false; }
