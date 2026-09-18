@@ -2501,6 +2501,8 @@ function doLogoutAdmin(){
   if(tabPreciosBtn) tabPreciosBtn.style.display='';
   var tcEl = document.getElementById('tc-controls');
   if(tcEl) tcEl.style.display='none';
+  var repBtn = document.getElementById('tab-representantes-btn');
+  if(repBtn) repBtn.style.display='none';
   cerrarAdmin();
 }
 
@@ -2533,11 +2535,9 @@ async function doLogin(){
       document.getElementById('admin-user-chip').textContent = data.nombre + ' (' + data.nivel + ')';
       document.getElementById('btn-admin-logout').style.display='';
       document.getElementById('btn-mapa-talleres').style.display='';
-      var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
-      if(tabPreciosBtn) tabPreciosBtn.style.display = data.nivel === 'owner' ? '' : 'none';
-      var tcEl = document.getElementById('tc-controls');
-      if(tcEl){ tcEl.style.display = data.nivel==='owner' ? 'flex' : 'none'; if(data.nivel==='owner') tcCargar(); }
+      aplicarVisibilidadAdminPorNivel(data.nivel, data.nombre);
       pmInicializar();
+      sincronizarClientes();
       document.getElementById('admin-pm').style.display='block';
       ghConfigCheck();
     } else {
@@ -3547,10 +3547,10 @@ async function clcVerificarConfirmaciones(){
   var prev = {};
   try{ prev = JSON.parse(localStorage.getItem(prevKey)||'{}'); }catch(e){}
 
-  // Intentar obtener estados actuales desde Google Sheets
+  // Intentar obtener estados actuales desde Google Sheets (solo los propios)
   var pedidos = [];
   try{
-    var res = await apiSheets('getPedidos', {});
+    var res = await apiSheets('getPedidosCliente', {usuario: clienteActivo.usuario, password: clienteActivo.password});
     if(res && res.ok && res.data) pedidos = res.data;
     else throw new Error('sin data');
   }catch(e){
@@ -4161,11 +4161,15 @@ function vaciarCarrito(){
 setTimeout(function(){ if(clienteActivo) actualizarFabCarrito(); }, 200);
 
 // ── CLIENTES + GOOGLE SHEETS ──────────────────────────────────────────────
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygBGDEJOblVEJwMr5OI00e2PQC_z2OSbCVP7J5b0KcgXzgv0uZSx0znVx9KzUVTlqIow/exec";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzpVwM7uPZH2-uYNN21nbGuklh5GOLMOiLoU2WxsuCfC8zMt_yh8Vlonmg0tuVvLI4Lg/exec";
 
 async function apiSheets(action, data){
   data = data || {};
   data.action = action;
+  // Las acciones administrativas del backend ahora exigen el mismo token
+  // de sesión que ya emitió el login de admin (Supabase) — lo mandamos
+  // automáticamente en cada llamada cuando hay un admin logueado.
+  if(adminToken) data.token = adminToken;
   try{
     var resp = await fetch(SCRIPT_URL, {
       method: 'POST',
@@ -4272,10 +4276,9 @@ var clienteActivo = (function(){
 
 // Aplicar sesion al cargar
 if(clienteActivo){ setTimeout(function(){ aplicarSesionCliente(); iniciarPollingNotificaciones(); }, 100); }
-// Sincronizar clientes en background al abrir
-setTimeout(function(){
-  if(cacheVencido()) sincronizarClientes();
-}, 1500);
+// (la lista completa de clientes ya no se sincroniza para cualquier
+// visitante al abrir la página — solo cuando hay un admin logueado,
+// ver sincronizarClientes() en los flujos de login de admin)
 
 function aplicarSesionCliente(){
   // Si el cliente tiene dirección guardada en su objeto, sincronizar con rag_dir_
@@ -4335,51 +4338,40 @@ async function doLoginCliente(){
       document.getElementById('admin-user-chip').textContent = ad.nombre + ' (' + ad.nivel + ')';
       document.getElementById('btn-admin-logout').style.display='';
       document.getElementById('btn-mapa-talleres').style.display='';
-      var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
-      if(tabPreciosBtn) tabPreciosBtn.style.display = ad.nivel === 'owner' ? '' : 'none';
-      var tcEl = document.getElementById('tc-controls');
-      if(tcEl){ tcEl.style.display = ad.nivel==='owner' ? 'flex' : 'none'; if(ad.nivel==='owner') tcCargar(); }
+      aplicarVisibilidadAdminPorNivel(ad.nivel, ad.nombre);
       pmInicializar();
+      sincronizarClientes();
       document.getElementById('admin-pm').style.display='block';
       document.getElementById('admin-overlay').classList.add('show');
       return;
     }
   } catch(e) {}
 
-  // Si el cache venció, sincronizar desde Sheets primero
-  if(cacheVencido()){ await sincronizarClientes(); }
+  // No es admin: probar como cliente. El servidor valida usuario/password
+  // (ya no se descarga la lista completa de clientes para comparar acá).
+  var res = null;
+  try{ res = await apiSheets('loginCliente', {usuario: u, password: p}); }catch(e){}
 
   btn.textContent = 'Ingresar al catálogo'; btn.disabled = false;
 
-  var found = CLIENTES.find(function(c){ return c.usuario.toLowerCase()===u && c.password===p && c.activo; });
+  var found = (res && res.ok && res.cliente) ? res.cliente : null;
   if(found){
-    clienteActivo = found;
-    localStorage.setItem('rag_sesion_v1', JSON.stringify(found));
+    clienteActivo = {
+      nombre: found.nombre, usuario: found.usuario, password: p,
+      email: found.email || '', tel: found.tel || '',
+      pago: found.pago || 'Contado', pagos: found.pagos || 'transferencia',
+      descuento: parseFloat(found.descuento) || 0, activo: true
+    };
+    localStorage.setItem('rag_sesion_v1', JSON.stringify(clienteActivo));
     cerrarLoginCliente();
     aplicarSesionCliente();
     iniciarPollingNotificaciones();
     pmToast('\ud83d\udc4b Bienvenido, '+found.nombre+'!');
   } else {
-    // Intentar una sincronizaci\u00f3n forzada si no encontr\u00f3
-    await sincronizarClientes();
-    found = CLIENTES.find(function(c){ return c.usuario.toLowerCase()===u && c.password===p && c.activo; });
-    if(found){
-      clienteActivo = found;
-      localStorage.setItem('rag_sesion_v1', JSON.stringify(found));
-      cerrarLoginCliente();
-      aplicarSesionCliente();
-      iniciarPollingNotificaciones();
-      pmToast('\ud83d\udc4b Bienvenido, '+found.nombre+'!');
-    } else {
-      var errEl = document.getElementById('cl-err');
-      if(CLIENTES.length === 0){
-        errEl.textContent = 'No hay conexión con el servidor. Contactá al administrador.';
-      } else {
-        errEl.textContent = 'Usuario o contraseña incorrectos';
-      }
-      errEl.style.display='block';
-      document.getElementById('cl-pass').value='';
-    }
+    var errEl = document.getElementById('cl-err');
+    errEl.textContent = (res && res.msg) ? res.msg : 'No hay conexión con el servidor. Contactá al administrador.';
+    errEl.style.display='block';
+    document.getElementById('cl-pass').value='';
   }
 }
 
@@ -4488,10 +4480,10 @@ async function clcRenderHistorial(){
   var container = document.getElementById('clcfg-hist-body');
   container.innerHTML = '<div class="clcfg-hist-empty">&#128203; Cargando pedidos...</div>';
 
-  // Intentar traer de Google Sheets (fuente de verdad)
+  // Intentar traer de Google Sheets (fuente de verdad; solo los propios)
   var pedidos = [];
   try{
-    var res = await apiSheets('getPedidos', {});
+    var res = await apiSheets('getPedidosCliente', {usuario: clienteActivo.usuario, password: clienteActivo.password});
     if(res && res.ok && res.data && res.data.length){
       // Combinar: Sheets + pedidos locales aún no sincronizados
       var sheetNros = res.data.map(function(p){ return p.numero; });
@@ -4968,6 +4960,97 @@ function eliminarCliente(idx){
   saveClientes(CLIENTES);
   clRender();
   pmToast('Cliente eliminado');
+}
+
+// ── REPRESENTANTES (admin) ────────────────────────────────────────────────
+var REP_DATA = [];
+
+async function repRender(){
+  var tbody = document.getElementById('rep-tbody');
+  if(tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9CA3AF">Cargando...</td></tr>';
+  var res = await apiSheets('getReporteRepresentantes', {});
+  var sel = document.getElementById('rep-select');
+  if(!res || !res.ok){
+    if(tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9CA3AF">'+esc((res&&res.msg)||'No se pudo cargar')+'</td></tr>';
+    if(sel) sel.innerHTML = '';
+    return;
+  }
+  REP_DATA = res.data || [];
+  if(sel){
+    sel.innerHTML = REP_DATA.map(function(g,i){
+      return '<option value="'+i+'">'+esc(g.representante)+' ('+g.clientes.length+' clientes)</option>';
+    }).join('');
+    sel.style.display = REP_DATA.length > 1 ? '' : 'none';
+  }
+  repRenderDetalle();
+}
+
+function repRenderDetalle(){
+  var tbody = document.getElementById('rep-tbody');
+  var statsEl = document.getElementById('rep-stats');
+  if(!tbody) return;
+  var sel = document.getElementById('rep-select');
+  var idx = sel ? parseInt(sel.value||'0',10) : 0;
+  var grupo = REP_DATA[idx];
+  if(!grupo){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9CA3AF">Sin datos.</td></tr>';
+    if(statsEl) statsEl.innerHTML = '';
+    return;
+  }
+  if(statsEl){
+    statsEl.innerHTML = '<strong>'+grupo.clientes.length+'</strong> clientes &mdash; total comprado este mes: <strong>$'+Number(grupo.totalMes||0).toLocaleString('es-AR')+'</strong>';
+  }
+  if(grupo.clientes.length === 0){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#9CA3AF">Este representante todavía no tiene clientes.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = grupo.clientes.slice().sort(function(a,b){ return b.comprasMes - a.comprasMes; }).map(function(c){
+    var descTag = c.descuento>0 ? '<span class="cl-desc-pill">-'+c.descuento+'%</span>' : '<span style="color:#9CA3AF;font-size:12px">Sin desc.</span>';
+    var estadoTag = (c.activo==='SI') ? '<span class="cl-badge-activo">Activo</span>' : '<span class="cl-badge-inactivo">Inactivo</span>';
+    return '<tr>'+
+      '<td><strong>'+esc(c.nombre)+'</strong></td>'+
+      '<td><code style="font-size:12px">'+esc(c.usuario)+'</code></td>'+
+      '<td style="font-size:12px">'+esc(c.tel||'-')+'</td>'+
+      '<td>'+descTag+'</td>'+
+      '<td>'+estadoTag+'</td>'+
+      '<td><strong>$'+Number(c.comprasMes||0).toLocaleString('es-AR')+'</strong></td>'+
+      '</tr>';
+  }).join('');
+}
+
+// Muestra/oculta pestañas del panel admin según el nivel de la sesión.
+// José y Silvina (por nombre, aunque en Supabase Silvina siga en nivel
+// 'admin') y cualquier 'owner' ven todo; un 'representante' solo ve
+// Clientes (ya acotado por el backend a los suyos) y Representantes.
+function aplicarVisibilidadAdminPorNivel(nivel, nombre){
+  var esOwner = nivel === 'owner';
+  var esDueno = esOwner || nombre === 'José' || nombre === 'Silvina';
+  var esRepresentante = nivel === 'representante';
+
+  var tabPreciosBtn = document.querySelector('.admin-tab[onclick*="tab-precios"]');
+  if(tabPreciosBtn) tabPreciosBtn.style.display = esOwner ? '' : 'none';
+  var tcEl = document.getElementById('tc-controls');
+  if(tcEl){ tcEl.style.display = esOwner ? 'flex' : 'none'; if(esOwner) tcCargar(); }
+
+  var repBtn = document.getElementById('tab-representantes-btn');
+  if(repBtn) repBtn.style.display = (esDueno || esRepresentante) ? '' : 'none';
+
+  ['tab-pedidos-btn','tab-ghconfig-btn'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.style.display = esRepresentante ? 'none' : '';
+  });
+  var ingresosBtn = document.querySelector('.admin-tab[onclick*="tab-ingresos"]');
+  if(ingresosBtn) ingresosBtn.style.display = esRepresentante ? 'none' : '';
+  var catalogoBtn = document.querySelector('.admin-tab[onclick*="tab-catalogo"]');
+  if(catalogoBtn) catalogoBtn.style.display = esRepresentante ? 'none' : '';
+  var dashBtn = document.querySelector('.admin-tab[onclick*="tab-dashboard"]');
+  if(dashBtn) dashBtn.style.display = esRepresentante ? 'none' : '';
+
+  // Un representante entra directo a su propio reporte, no al dashboard
+  // general del negocio (que muestra pedidos de todos los clientes).
+  if(esRepresentante && repBtn){
+    setTimeout(function(){ adminSwitchTab('tab-representantes', repBtn); repRender(); }, 0);
+  }
 }
 
 var clFiltrados = [];
@@ -6422,6 +6505,7 @@ function ceGuardarEnArchivoManual(){
         <button class="admin-tab active" onclick="adminSwitchTab('tab-dashboard',this);dashRender()">&#127968; Dashboard</button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-precios',this)">&#128176; Precios</button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-clientes',this)">&#128100; Clientes</button>
+        <button class="admin-tab" id="tab-representantes-btn" onclick="adminSwitchTab('tab-representantes',this);repRender()">&#129309; Representantes</button>
         <button class="admin-tab" id="tab-pedidos-btn" onclick="adminSwitchTab('tab-pedidos',this);pedRender()">&#128203; Pedidos <span id="ped-badge" style="display:none;background:#CC0000;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-ingresos',this);ingCargar()">&#128230; Ingreso mercader&iacute;a <span id="ing-badge" style="display:none;background:#EA580C;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-catalogo',this);ceInicializar()">&#9999; Editor Cat&aacute;logo</button>
@@ -6550,6 +6634,23 @@ function ceGuardarEnArchivoManual(){
           </table>
         </div>
       </div><!-- /tab-clientes -->
+
+      <div class="admin-tab-panel" id="tab-representantes">
+        <div class="cl-mgmt-toolbar">
+          <span style="font-size:14px;font-weight:800;color:#1A1A1A;margin-right:8px">&#129309; Representantes</span>
+          <select id="rep-select" onchange="repRenderDetalle()" style="min-width:220px;padding:8px;border-radius:8px;border:1px solid #E5E7EB"></select>
+        </div>
+        <div class="pm-stats" id="rep-stats"></div>
+        <div class="cl-table-wrap">
+          <table class="cl-table">
+            <thead><tr>
+              <th>Cliente</th><th>Usuario</th><th>Tel</th><th>Descuento</th>
+              <th>Estado</th><th>Compras este mes</th>
+            </tr></thead>
+            <tbody id="rep-tbody"></tbody>
+          </table>
+        </div>
+      </div><!-- /tab-representantes -->
 
       <div class="admin-tab-panel" id="tab-pedidos">
         <div class="pm-toolbar">
