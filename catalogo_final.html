@@ -3208,13 +3208,30 @@ var PED_CACHE = [];
 async function pedCargar(){
   document.getElementById('ped-list').innerHTML = '<div style="padding:20px;color:#9CA3AF;text-align:center">Cargando pedidos...</div>';
   // Intentar traer de Google Sheets
+  var res;
   try{
-    var res = await apiSheets('getPedidos', {});
-    if(res && res.data) PED_CACHE = res.data;
-    else throw new Error('sin data');
+    res = await apiSheets('getPedidos', {});
   }catch(e){
-    // Fallback: localStorage de todos los clientes (solo del navegador actual)
-    try{ PED_CACHE = JSON.parse(localStorage.getItem('rag_pedidos_v1')||'[]'); }catch(ex){ PED_CACHE=[]; }
+    res = {ok:false, msg:'Sin conexión: ' + (e.message||e)};
+  }
+  if(res && res.ok && res.data){
+    PED_CACHE = res.data;
+  } else {
+    // La sesión de admin vence a las 8hs (ver admin_sessions en Supabase):
+    // si el token quedó vencido, no hay que mostrar datos viejos del
+    // localStorage como si fueran la grilla real — eso oculta pedidos
+    // nuevos de otros clientes/dispositivos. Avisar y pedir reingresar.
+    var esSesion = res && /sesi[oó]n/i.test(res.msg||'');
+    document.getElementById('ped-list').innerHTML =
+      '<div style="padding:30px;text-align:center;color:#DC2626">⚠ No se pudieron cargar los pedidos'
+      + (res && res.msg ? ' — ' + esc(res.msg) : '')
+      + (esSesion ? '<br><button class="co-btn-primary" style="margin-top:10px" onclick="doLogoutAdmin()">Reingresar</button>' : '')
+      + '</div>';
+    pmToast('⚠ ' + (res && res.msg ? res.msg : 'No se pudieron cargar los pedidos'));
+    PED_CACHE = [];
+    var badgeErr = document.getElementById('ped-badge');
+    if(badgeErr) badgeErr.style.display='none';
+    return;
   }
   pedRender();
   // Badge
