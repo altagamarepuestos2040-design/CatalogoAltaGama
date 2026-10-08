@@ -697,6 +697,43 @@ select:focus{border-color:#CC0000}
 }
 .ped-card:hover{ border-color:#93C5FD; }
 
+/* ── COTIZACIONES INTERNAS (violeta, para diferenciarlas de Pedidos) ── */
+.cot-aviso{background:#F5F3FF;border:1.5px solid #DDD6FE;color:#5B21B6;border-radius:10px;padding:10px 14px;font-size:13px;margin:0 0 14px}
+.cot-box{background:#fff;border:1.5px solid #E5E7EB;border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.cot-box-title{font-size:14px;font-weight:800;color:#4C1D95;margin-bottom:6px}
+.cot-help{font-size:12px;color:#6B7280;margin-bottom:10px;line-height:1.5}
+.cot-help code{background:#F3F4F6;padding:1px 6px;border-radius:4px;font-size:11px;word-break:break-word}
+.cot-chatbar{display:flex;gap:8px;align-items:flex-end}
+.cot-chatbar textarea{flex:1;resize:vertical;min-height:44px;padding:10px 12px;border:1.5px solid #DDD6FE;border-radius:10px;font-family:inherit;font-size:14px;outline:none}
+.cot-chatbar textarea:focus{border-color:#7C3AED}
+.cot-btn{background:#6D28D9;color:#fff}
+.cot-btn:hover{background:#5B21B6}
+.cot-bubble{background:#EDE9FE;color:#3B0764;border-radius:12px 12px 2px 12px;padding:8px 12px;font-size:13px;margin:0 0 10px auto;max-width:85%;width:fit-content;white-space:pre-wrap;word-break:break-word}
+.cot-prev{border:1.5px dashed #C4B5FD;border-radius:10px;padding:12px;margin-bottom:12px;background:#FAFAFF}
+.cot-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:10px}
+.cot-fields label{font-size:11px;font-weight:700;color:#6B7280;display:block;margin-bottom:2px}
+.cot-fields input,.cot-fields select,.cot-tbl input,.cot-tbl select{width:100%;padding:6px 8px;border:1.5px solid #E5E7EB;border-radius:6px;font-family:inherit;font-size:13px;box-sizing:border-box;background:#fff;color:#111827}
+.cot-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.cot-tbl th{background:#F5F3FF;color:#5B21B6;text-align:left;padding:6px 8px;font-size:12px}
+.cot-tbl td{padding:4px 6px;border-bottom:1px solid #F3F4F6;vertical-align:middle}
+.cot-tbl .cot-nf{color:#B45309;font-size:11px}
+.cot-card{border:1.5px solid #DDD6FE;border-left:5px solid #7C3AED;border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.cot-badge{background:#7C3AED;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
+.cot-vence{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+@media (max-width:640px){
+  .cot-chatbar{flex-direction:column;align-items:stretch}
+  .cot-tbl-edit thead{display:none}
+  .cot-tbl-edit tr{display:grid;grid-template-columns:70px 1fr 1fr 36px;gap:6px;padding:8px 0;border-bottom:1px solid #E5E7EB}
+  .cot-tbl-edit td{width:auto!important;border:none;padding:0}
+  .cot-tbl-edit td:nth-child(1){grid-column:1/4}
+  .cot-tbl-edit td:nth-child(2){grid-column:1/-1;grid-row:2}
+  .cot-tbl-edit td:nth-child(3){grid-row:3;grid-column:1}
+  .cot-tbl-edit td:nth-child(4){grid-row:3;grid-column:2}
+  .cot-tbl-edit td:nth-child(5){grid-row:3;grid-column:3/-1;align-self:center}
+  .cot-tbl-edit td:nth-child(6){grid-row:1;grid-column:4}
+  .cot-card .cot-tbl td{padding:4px 3px;font-size:12px}
+}
+
 /* ── DASHBOARD ADMIN ─────────────────────────────── */
 .dash-cards{ display:flex;gap:14px;flex-wrap:wrap; }
 .dash-card{
@@ -2418,6 +2455,7 @@ function tcEditar(moneda){
   EXCHANGE_RATES[moneda] = val;
   tcActualizarBotones();
   if(typeof render === 'function') render();
+  if(pmFiltrados.length) pmRender();
   pmToast('\u{1F4B1} ' + moneda + ' $' + val.toLocaleString('es-AR') + ' — guardando...');
   tcGuardarMoneda(moneda, val);
 }
@@ -2728,6 +2766,17 @@ function pmFilter(){
   pmRender();
 }
 
+// Precio en la moneda en que fue cargado (EUR o USD), o null si es solo ARS
+function pmPrecioOrigen(id){
+  var idStr = String(id||'');
+  var idNum = String(parseInt(idStr,10)||idStr);
+  var eurP = PRECIOS_EUR[idStr] || PRECIOS_EUR[idNum] || 0;
+  if(eurP > 0) return {moneda:'EUR', simbolo:'€', valor:eurP};
+  var usdP = PRECIOS_USD[idStr] || PRECIOS_USD[idNum] || 0;
+  if(usdP > 0) return {moneda:'USD', simbolo:'US$', valor:usdP};
+  return null;
+}
+
 function pmRender(){
   var tbody = document.getElementById('pm-tbody');
   tbody.innerHTML = '';
@@ -2737,11 +2786,18 @@ function pmRender(){
     var precioActual = pmEdits.hasOwnProperty(a.id) ? pmEdits[a.id] : getPrecio(a.id);
     var changed = pmEdits.hasOwnProperty(a.id);
     if(changed) tr.classList.add('edited');
+    var orig = pmPrecioOrigen(a.id);
+    var origHtml = orig
+      ? '<span style="font-weight:700;color:'+(orig.moneda==='EUR'?'#059669':'#2563EB')+'">'+orig.simbolo+' '+
+          orig.valor.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'+
+          '<br><small style="color:#9CA3AF">T.C. $ '+EXCHANGE_RATES[orig.moneda].toLocaleString('es-AR')+'</small>'
+      : '<span style="color:#9CA3AF">ARS</span>';
     tr.innerHTML =
       '<td><span class="pm-id">'+esc(a.id)+'</span></td>'+
       '<td><span class="pm-brand '+pmGetBrandClass(a.marca)+'">'+esc(a.marca)+'</span></td>'+
       '<td>'+esc(a.desc)+'</td>'+
       '<td>'+esc(a.cat)+'</td>'+
+      '<td style="text-align:right;white-space:nowrap">'+origHtml+'</td>'+
       '<td style="text-align:right">'+
         '<input type="number" class="pm-price-input'+(changed?' changed':'')+'" '+
         'value="'+(precioActual||0)+'" min="0" step="1" '+
@@ -3205,14 +3261,24 @@ async function enviarPedido(){
 // ── GESTIÓN DE PEDIDOS (ADMIN) ────────────────────────────────────────────
 var PED_CACHE = [];
 
+function pedEsperar(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
 async function pedCargar(){
   document.getElementById('ped-list').innerHTML = '<div style="padding:20px;color:#9CA3AF;text-align:center">Cargando pedidos...</div>';
-  // Intentar traer de Google Sheets
+  // Intentar traer de Google Sheets. Apps Script a veces falla o responde
+  // algo inesperado en el primer intento (intermitencia del lado de Google,
+  // no de este código) — reintentamos un par de veces antes de rendirnos.
   var res;
-  try{
-    res = await apiSheets('getPedidos', {});
-  }catch(e){
-    res = {ok:false, msg:'Sin conexión: ' + (e.message||e)};
+  for(var intento=1; intento<=3; intento++){
+    try{
+      res = await apiSheets('getPedidos', {});
+    }catch(e){
+      res = {ok:false, msg:'Sin conexión: ' + (e.message||e)};
+    }
+    if(res && res.ok && res.data) break;
+    // No tiene sentido reintentar si el rechazo es por sesión inválida real.
+    if(res && /sesi[oó]n/i.test(res.msg||'')) break;
+    if(intento<3) await pedEsperar(800);
   }
   if(res && res.ok && res.data){
     PED_CACHE = res.data;
@@ -3523,6 +3589,498 @@ function pedActualizarBadge(){
   }
 }
 setTimeout(pedActualizarBadge, 1000);
+
+// ── COTIZACIONES INTERNAS ─────────────────────────────────────────────────
+// Cotizaciones que arma el equipo (WhatsApp / Mail / Mostrador). Viven en
+// Supabase (tabla cotizaciones, ver supabase_cotizaciones.sql), separadas
+// de los pedidos de clientes que van a Google Sheets.
+var COT_ACTUAL = null;   // cotización interpretada, todavía sin guardar
+var COT_CACHE = [];      // resultados de la última búsqueda
+var COT_IDX = null;      // índice código normalizado -> artículo del catálogo
+
+function cotNorm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function cotPesos(n){ return '$ '+Number(n||0).toLocaleString('es-AR',{maximumFractionDigits:2}); }
+
+var COT_MARCAS = null;   // marcas del catálogo normalizadas (febi, textar, ks, blueprint...)
+
+// Índices: número de artículo de la marca y números originales (OE).
+function cotIndexar(){
+  if(COT_IDX) return;
+  var arts = (typeof DATA!=='undefined' && DATA.length) ? DATA : TABLA_PRECIOS;
+  COT_IDX = {id:{}, oe:{}, oeLista:[]};
+  COT_MARCAS = {};
+  arts.forEach(function(a){
+    COT_MARCAS[cotNorm(a.marca)] = a.marca;
+    var k = cotNorm(a.id);
+    (COT_IDX.id[k] = COT_IDX.id[k] || []).push(a);
+    var sc = k.replace(/^0+/,'');
+    if(sc !== k) (COT_IDX.id[sc] = COT_IDX.id[sc] || []).push(a);
+    Object.keys(a.oe||{}).forEach(function(fab){
+      String(a.oe[fab]||'').split(/[|,;\/]+/).forEach(function(n){
+        var kn = cotNorm(n);
+        if(kn.length < 4) return;
+        var lst = COT_IDX.oe[kn] = COT_IDX.oe[kn] || [];
+        if(lst.indexOf(a) < 0){ lst.push(a); COT_IDX.oeLista.push([kn, a]); }
+      });
+    });
+  });
+}
+
+// Detecta una marca del catálogo dentro de un texto libre ("textar", "blue print", "febi"...)
+function cotDetectarMarca(texto){
+  cotIndexar();
+  var nt = cotNorm(texto);
+  if(!nt) return '';
+  var mejor = '';
+  Object.keys(COT_MARCAS).forEach(function(m){
+    if(m.length >= 2 && nt.indexOf(m) >= 0 && m.length > mejor.length) mejor = m;
+  });
+  return mejor;
+}
+
+// Busca como el buscador del catálogo: por número de artículo de la marca
+// o por número original (OE). Devuelve los candidatos ordenados por relevancia;
+// si se indicó una marca, prioriza (o filtra) los de esa marca.
+function cotBuscarCandidatos(codigo, marcaNorm){
+  cotIndexar();
+  var k = cotNorm(codigo);
+  if(k.length < 3) return [];
+  var pts = new Map();
+  function sumar(a, p, via){
+    var prev = pts.get(a);
+    if(!prev || prev.p < p) pts.set(a, {p:p, via:via});
+  }
+  (COT_IDX.id[k] || COT_IDX.id[k.replace(/^0+/,'')] || []).forEach(function(a){ sumar(a, 100, 'artículo'); });
+  (COT_IDX.oe[k] || []).forEach(function(a){ sumar(a, 80, 'original'); });
+  // Original sin sufijo: 2H0698151 encuentra 2H0698151A
+  if(k.length >= 6){
+    COT_IDX.oeLista.forEach(function(e){
+      if(e[0] !== k && e[0].indexOf(k) === 0 && e[0].length - k.length <= 3) sumar(e[1], 60, 'original');
+    });
+  }
+  var res = [];
+  pts.forEach(function(v, a){
+    var p = v.p + (marcaNorm && cotNorm(a.marca) === marcaNorm ? 50 : 0);
+    res.push({art:a, p:p, via:v.via});
+  });
+  if(marcaNorm && res.some(function(r){ return cotNorm(r.art.marca) === marcaNorm; }))
+    res = res.filter(function(r){ return cotNorm(r.art.marca) === marcaNorm; });
+  res.sort(function(x,y){ return y.p - x.p || (getPrecio(y.art.id)>0) - (getPrecio(x.art.id)>0); });
+  return res;
+}
+
+// Igual que agregarAlCarrito: respeta la cantidad mínima / múltiplo del artículo
+function cotCantidadCarrito(art, qty){
+  var mult = (art && art.mult) || 1;
+  if(art && (art.marca==='TRW Engine Components' || art.marca==='TRW')) mult = Math.max(mult, 2);
+  var c = Math.max(mult, parseInt(qty,10) || mult);
+  if(mult > 1) c = Math.round(c/mult)*mult;
+  return c;
+}
+
+function cotAplicarArticulo(it, art, via){
+  it.id = art.id;
+  it.marca = art.marca;
+  it.desc = art.marca+' — '+art.desc;
+  it.via = via || 'artículo';
+  it.enCatalogo = true;
+  it.precioCatalogo = getPrecio(art.id) || 0;
+  it.qty = cotCantidadCarrito(art, it.qty);
+  if(!it.precioManual) it.precioUnitario = it.precioCatalogo;
+}
+
+// "605000" / "$605.000" / "121.000,50" -> número
+function cotParsePrecio(s){
+  s = String(s||'').replace(/\$/g,'').trim();
+  if(!s) return 0;
+  if(/,\d{1,2}$/.test(s)) s = s.replace(/\./g,'').replace(',','.');
+  else s = s.replace(/[.,](?=\d{3}(\D|$))/g,'');
+  return parseFloat(s)||0;
+}
+
+function cotParsearItem(seg){
+  var toks = seg.trim().split(/\s+/).filter(Boolean);
+  var qty = 1, precio = 0, codigo = '', resto = [];
+  for(var i=0;i<toks.length;i++){
+    var t = toks[i], m;
+    // Cantidad: siempre "x" + número (x2, x10, o "x 3"). Sin cantidad = 1.
+    if((m = t.match(/^x(\d+)$/i))){ qty = parseInt(m[1],10)||1; continue; }
+    if(/^x$/i.test(t) && /^\d+$/.test(toks[i+1]||'')){ qty = parseInt(toks[++i],10)||1; continue; }
+    if(/^\$/.test(t)){ precio = cotParsePrecio(t.length>1 ? t : toks[++i]); continue; }
+    if(!codigo && /\d/.test(t)){
+      codigo = t.replace(/[,;]$/,'');
+      // Código escrito con espacios ("2H0 698 151"): unir con los siguientes pedazos
+      if(!cotBuscarCandidatos(codigo).length){
+        for(var n=3; n>=1; n--){
+          var partes = toks.slice(i+1, i+1+n);
+          if(partes.length < n || partes.some(function(p){ return !/^[a-z0-9-]{1,6}$/i.test(p) || /^x\d*$/i.test(p); })) continue;
+          if(cotBuscarCandidatos(codigo + partes.join('')).length){ codigo += partes.join(''); i += n; break; }
+        }
+      }
+      continue;
+    }
+    if(codigo && !precio && /^[\d.,]+$/.test(t) && cotParsePrecio(t) >= 100){ precio = cotParsePrecio(t); continue; }
+    resto.push(t);
+  }
+  // "filtro de aceite x2 15000": el número no es un código del catálogo, es el precio
+  if(codigo && !precio && resto.length && /^\$?[\d.,]+$/.test(codigo) && !cotBuscarCandidatos(codigo).length){
+    precio = cotParsePrecio(codigo); codigo = '';
+  }
+  if(!codigo && !resto.length) return null;
+  var extra = resto.join(' ');
+  var marcaNorm = cotDetectarMarca(extra);
+  var it = {
+    codigoEscrito: codigo, id: codigo, desc: extra, marca: marcaNorm ? COT_MARCAS[marcaNorm] : '',
+    qty: qty, precioUnitario: precio, precioManual: precio > 0,
+    precioCatalogo: 0, enCatalogo: false, alternativas: []
+  };
+  var cands = codigo ? cotBuscarCandidatos(codigo, marcaNorm) : [];
+  cotResolverCandidatos(it, cands, marcaNorm);
+  return it;
+}
+
+// Número de la marca → se entiende solo. Número original → necesita la marca:
+// si no se indicó y coincide con artículos de más de una marca, queda pendiente
+// de elegir (no se puede guardar hasta resolverlo).
+function cotResolverCandidatos(it, cands, marcaNorm){
+  it.alternativas = cands.slice(0, 10).map(function(c){ return {art:c.art, via:c.via}; });
+  it.necesitaMarca = false;
+  if(!cands.length) return;
+  var porArticulo = cands[0].via === 'artículo';
+  var marcas = {};
+  cands.forEach(function(c){ marcas[c.art.marca] = 1; });
+  if(!porArticulo && !marcaNorm && Object.keys(marcas).length > 1){
+    it.necesitaMarca = true;
+    it.id = it.codigoEscrito; it.enCatalogo = false; it.precioCatalogo = 0; it.via = 'original';
+    if(!it.precioManual) it.precioUnitario = 0;
+    return;
+  }
+  cotAplicarArticulo(it, cands[0].art, cands[0].via);
+}
+
+function cotParsear(texto){
+  var t = ' '+texto.replace(/[()]/g,' ')+' ';
+  var r = {canal:'', contacto:'', chasis:'', items:[], texto:texto.trim()};
+  var canales = [
+    [/\b(whats\s?app|wsp|wpp|wa)\b/i, 'WhatsApp'],
+    [/\b(e-?mail|mail|correo)\b/i, 'Mail'],
+    [/\b(local|mostrador)\b/ig, 'Mostrador']
+  ];
+  canales.forEach(function(c){
+    if(c[0].test(t)){ if(!r.canal) r.canal = c[1]; t = t.replace(new RegExp(c[0].source,'ig'),' '); }
+  });
+  var mail = t.match(/[\w.+-]+@[\w-]+(\.[\w-]+)+/);
+  if(mail){ r.email = mail[0]; t = t.replace(mail[0],' '); }
+  // VIN: 17 caracteres sin I/O/Q, con letras y números
+  var vin = t.match(/\b(?=[A-HJ-NPR-Z0-9]*[A-HJ-NPR-Z])(?=[A-HJ-NPR-Z0-9]*\d)[A-HJ-NPR-Z0-9]{17}\b/i);
+  if(vin){ r.chasis = vin[0].toUpperCase(); t = t.replace(vin[0],' '); }
+  var kw = t.match(/\b(pedido|cotizaci[oó]n|cotizar|presupuesto|art[ií]culos)\b:?/i);
+  var cab = kw ? t.slice(0, kw.index) : '';
+  var cuerpo = kw ? t.slice(kw.index + kw[0].length) : t;
+  if(!kw){
+    // Sin "pedido": los números del principio que no son artículos son el teléfono
+    var mt;
+    while((mt = cuerpo.match(/^\s*(\+?\d[\d-]{2,14})(?=\s+\S)/)) && !cotBuscarCandidatos(mt[1]).length){
+      cab += ' ' + mt[1];
+      cuerpo = cuerpo.slice(mt[0].length);
+    }
+  }
+  cab = cab.replace(/\s+/g,' ').trim();
+  r.contacto = [cab, r.email].filter(Boolean).join(' / ');
+  cuerpo.split(/[\/\n;]+/).forEach(function(seg){
+    var it = cotParsearItem(seg);
+    if(!it) return;
+    // Como en el carrito: el mismo artículo dos veces suma cantidad
+    var dup = it.enCatalogo && r.items.find(function(x){ return x.enCatalogo && x.id === it.id; });
+    if(dup) dup.qty += it.qty; else r.items.push(it);
+  });
+  // Lo que no está en el catálogo no va como artículo: queda anotado en las notas
+  var noEncontrados = r.items.filter(function(it){ return !it.enCatalogo && !it.necesitaMarca; });
+  r.items = r.items.filter(function(it){ return it.enCatalogo || it.necesitaMarca; });
+  r.notas = noEncontrados.map(cotLineaNota).join('\n');
+  return r;
+}
+
+function cotLineaNota(it){
+  return [it.id ? it.id.toUpperCase() : '', it.id ? (it.desc||'') : it.desc]
+      .filter(Boolean).join(' ')
+    + ' x' + it.qty
+    + (it.precioUnitario ? ' ' + cotPesos(it.precioUnitario) : '')
+    + ' (no está en el catálogo)';
+}
+
+function cotAbrir(){
+  if(!COT_CACHE.length) cotBuscar();
+  setTimeout(function(){ var i=document.getElementById('cot-input'); if(i) i.focus(); }, 50);
+}
+
+function cotInterpretar(){
+  var inp = document.getElementById('cot-input');
+  var txt = (inp.value||'').trim();
+  if(!txt) return;
+  COT_ACTUAL = cotParsear(txt);
+  if(!COT_ACTUAL.items.length && !COT_ACTUAL.notas) COT_ACTUAL.items.push({id:'',desc:'',qty:1,precioUnitario:0,precioCatalogo:0,enCatalogo:false,alternativas:[]});
+  cotRenderPreview();
+}
+
+function cotRenderPreview(){
+  var c = COT_ACTUAL, box = document.getElementById('cot-preview');
+  if(!c){ box.innerHTML=''; return; }
+  var filas = c.items.map(function(it,i){
+    var notas = [];
+    if(it.id && !it.enCatalogo && !it.necesitaMarca) notas.push('<span class="cot-nf">No se encontró en el catálogo — cargá descripción y precio</span>');
+    if(it.enCatalogo && it.via === 'original') notas.push('<span style="color:#6D28D9;font-size:11px">Por número original '+esc(it.codigoEscrito)+'</span>');
+    if(it.enCatalogo && !it.precioCatalogo && !it.precioManual) notas.push('<span class="cot-nf">Sin precio en el catálogo</span>');
+    if(it.precioCatalogo && it.precioManual && Math.round(it.precioCatalogo)!==Math.round(it.precioUnitario)) notas.push('<span style="color:#6B7280;font-size:11px">Catálogo: '+cotPesos(it.precioCatalogo)+'</span>');
+    var desc = '<input value="'+esc(it.desc)+'" onchange="cotEditItem('+i+',\'desc\',this.value)">';
+    if(it.alternativas && it.alternativas.length > 1){
+      desc = '<select onchange="cotElegirAlternativa('+i+',this.value)"'+(it.necesitaMarca?' style="border-color:#DC2626;background:#FEF2F2"':'')+'>'
+        + (it.necesitaMarca ? '<option value="" selected>— Número original: elegí la marca —</option>' : '')
+        + it.alternativas.map(function(al,j){
+            var pr = getPrecio(al.art.id);
+            return '<option value="'+j+'"'+(!it.necesitaMarca && al.art.id===it.id?' selected':'')+'>'
+              + esc(al.art.marca+' '+al.art.id+' — '+al.art.desc+(pr?' — '+cotPesos(pr):' — sin precio'))+'</option>';
+          }).join('')
+        + '</select>';
+      notas.unshift(it.necesitaMarca
+        ? '<span style="color:#DC2626;font-size:11px;font-weight:700">El original '+esc(it.codigoEscrito)+' lo tienen '+it.alternativas.length+' artículos — indicá la marca</span>'
+        : '<span style="color:#B45309;font-size:11px;font-weight:700">'+it.alternativas.length+' coincidencias — verificá la marca</span>');
+    }
+    return '<tr>'
+      +'<td style="width:130px"><input value="'+esc(it.id)+'" onchange="cotEditItem('+i+',\'id\',this.value)"></td>'
+      +'<td>'+desc+(notas.length?'<div>'+notas.join(' · ')+'</div>':'')+'</td>'
+      +'<td style="width:60px"><input type="number" min="1" value="'+it.qty+'" onchange="cotEditItem('+i+',\'qty\',this.value)"></td>'
+      +'<td style="width:120px"><input type="number" min="0" value="'+it.precioUnitario+'" onchange="cotEditItem('+i+',\'precioUnitario\',this.value)"></td>'
+      +'<td style="width:110px;text-align:right;font-weight:700">'+cotPesos(it.qty*it.precioUnitario)+'</td>'
+      +'<td style="width:30px"><button class="pm-btn pm-btn-secondary" style="padding:4px 8px" title="Quitar" onclick="cotQuitarItem('+i+')">&times;</button></td>'
+      +'</tr>';
+  }).join('');
+  var total = cotTotal(c.items);
+  box.innerHTML = '<div class="cot-bubble">'+esc(c.texto)+'</div>'
+    +'<div class="cot-prev">'
+    +'<div class="cot-fields">'
+      +'<div><label>Canal</label><select onchange="COT_ACTUAL.canal=this.value">'
+        +['','WhatsApp','Mail','Mostrador'].map(function(o){ return '<option'+(o===c.canal?' selected':'')+' value="'+o+'">'+(o||'—')+'</option>'; }).join('')
+      +'</select></div>'
+      +'<div><label>Contacto (tel / mail / nombre)</label><input value="'+esc(c.contacto)+'" onchange="COT_ACTUAL.contacto=this.value"></div>'
+      +'<div><label>Chasis / vehículo</label><input value="'+esc(c.chasis)+'" onchange="COT_ACTUAL.chasis=this.value"></div>'
+      +'<div><label>Vigencia</label><select id="cot-meses">'
+        +[[2,'2 meses'],[3,'3 meses'],[4,'4 meses'],[6,'6 meses'],[12,'12 meses']].map(function(o){ return '<option value="'+o[0]+'">'+o[1]+'</option>'; }).join('')
+      +'</select></div>'
+    +'</div>'
+    +'<table class="cot-tbl cot-tbl-edit"><thead><tr><th>Código</th><th>Descripción</th><th>Cant.</th><th>P. unit.</th><th style="text-align:right">Subtotal</th><th></th></tr></thead><tbody>'+filas+'</tbody></table>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px">'
+      +'<button class="pm-btn pm-btn-secondary" onclick="cotAgregarItem()">+ Agregar artículo</button>'
+      +'<span style="font-size:16px;font-weight:800;color:#4C1D95">Total: '+cotPesos(total)+'</span>'
+    +'</div>'
+    +'<div class="cot-fields" style="margin-top:10px;grid-template-columns:1fr"><div><label>Notas'+(c.notas?' — incluye lo que no está en el catálogo':' (opcional)')+'</label>'
+      +'<textarea id="cot-notas" rows="'+Math.max(2,(c.notas||'').split('\n').length)+'" style="width:100%;box-sizing:border-box;padding:6px 8px;border:1.5px solid '+(c.notas?'#FCD34D;background:#FFFBEB':'#E5E7EB;background:#fff')+';border-radius:6px;font-family:inherit;font-size:13px;color:#111827;resize:vertical" oninput="COT_ACTUAL.notas=this.value">'+esc(c.notas||'')+'</textarea></div></div>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+      +'<button class="pm-btn pm-btn-secondary" onclick="cotDescartar()">Descartar</button>'
+      +'<button class="pm-btn cot-btn" id="cot-guardar-btn" onclick="cotGuardar()">&#128190; Guardar cotización</button>'
+    +'</div></div>';
+}
+
+function cotTotal(items){ return items.reduce(function(s,it){ return s + (Number(it.qty)||0)*(Number(it.precioUnitario)||0); },0); }
+
+function cotEditItem(i, campo, val){
+  var it = COT_ACTUAL.items[i];
+  if(campo==='qty') it.qty = Math.max(1, parseInt(val,10)||1);
+  else if(campo==='precioUnitario'){ it.precioUnitario = parseFloat(val)||0; it.precioManual = true; }
+  else if(campo==='id'){
+    // Mismo código escrito a mano: se busca igual que en el texto (artículo u original + marca)
+    var partes = val.trim().split(/\s+/);
+    var marcaNorm = cotDetectarMarca(partes.slice(1).join(' ')) || cotNorm(it.marca);
+    var cands = cotBuscarCandidatos(partes[0], marcaNorm);
+    it.codigoEscrito = partes[0];
+    it.marca = marcaNorm ? (COT_MARCAS[marcaNorm] || it.marca) : '';
+    cotResolverCandidatos(it, cands, marcaNorm);
+    if(!cands.length){ it.id = partes[0]; it.enCatalogo = false; it.precioCatalogo = 0; it.via = ''; }
+  }
+  else it[campo] = val;
+  cotRenderPreview();
+}
+
+function cotElegirAlternativa(i, j){
+  var it = COT_ACTUAL.items[i], al = it.alternativas[j];
+  if(al){ cotAplicarArticulo(it, al.art, al.via); it.necesitaMarca = false; }
+  cotRenderPreview();
+}
+function cotQuitarItem(i){ COT_ACTUAL.items.splice(i,1); cotRenderPreview(); }
+function cotAgregarItem(){ COT_ACTUAL.items.push({id:'',desc:'',qty:1,precioUnitario:0,precioCatalogo:0,enCatalogo:false,alternativas:[]}); cotRenderPreview(); }
+function cotDescartar(){ COT_ACTUAL = null; cotRenderPreview(); }
+
+async function cotRpc(fn, body){
+  if(!adminToken) return {ok:false, error:'sesion_invalida'};
+  body.p_token = adminToken;
+  try{
+    var r = await fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn, {
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if(!r.ok) return {ok:false, error:'HTTP '+r.status};
+    return await r.json();
+  }catch(e){ return {ok:false, error:'sin_conexion'}; }
+}
+function cotMsgError(res){
+  var e = res && res.error || '';
+  if(e==='sesion_invalida') return 'Sesión vencida — volvé a ingresar';
+  if(e==='HTTP 404') return 'Falta crear la tabla de cotizaciones en Supabase';
+  return 'Error: '+(e||'sin respuesta');
+}
+
+async function cotGuardar(){
+  var c = COT_ACTUAL;
+  // Como el carrito: el mismo artículo en dos filas se unifica sumando cantidades
+  var items = [];
+  c.items.forEach(function(it){
+    if(!it.id && !it.desc) return;
+    var dup = it.enCatalogo && items.find(function(x){ return x.enCatalogo && x.id === it.id && x.precioUnitario === it.precioUnitario; });
+    if(dup) dup.qty += it.qty; else items.push(Object.assign({}, it));
+  });
+  if(!items.length && !(c.notas||'').trim()){ pmToast('⚠ Agregá al menos un artículo'); return; }
+  var sinMarca = items.filter(function(it){ return it.necesitaMarca; });
+  if(sinMarca.length){ pmToast('⚠ Elegí la marca para el original '+sinMarca.map(function(it){ return it.codigoEscrito; }).join(', ')); return; }
+  if(!c.contacto && !c.chasis){ pmToast('⚠ Poné un teléfono, mail o chasis para poder encontrarla después'); return; }
+  var btn = document.getElementById('cot-guardar-btn');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  var res = await cotRpc('cot_crear', {
+    p_canal: c.canal||null, p_contacto: c.contacto||null, p_chasis: c.chasis||null, p_texto: c.texto,
+    p_items: items.map(function(it){ return {id:it.id, marca:it.marca||'', desc:it.desc, qty:it.qty, precioUnitario:it.precioUnitario, precioTotal:it.qty*it.precioUnitario, original:it.via==='original'?it.codigoEscrito:''}; }),
+    p_total: cotTotal(items), p_notas: c.notas||null,
+    p_meses: parseInt(document.getElementById('cot-meses').value,10)||2
+  });
+  if(!res || !res.ok){ btn.disabled=false; btn.textContent='💾 Guardar cotización'; pmToast('⚠ '+cotMsgError(res)); return; }
+  COT_ACTUAL = null;
+  document.getElementById('cot-input').value = '';
+  COT_CACHE = [res.data].concat(COT_CACHE.filter(function(x){ return x.numero!==res.data.numero; }));
+  document.getElementById('cot-preview').innerHTML =
+    '<div class="cot-card" style="background:#F5F3FF">✅ Cotización <strong>'+esc(res.data.numero)+'</strong> guardada — vence el '+new Date(res.data.vence_at).toLocaleDateString('es-AR')
+    +' &nbsp;<button class="pm-btn pm-btn-secondary" style="padding:4px 10px" onclick="cotCopiarWA(\''+esc(res.data.numero)+'\')">Copiar para WhatsApp</button></div>';
+  cotRenderResultados();
+  pmToast('✅ Cotización '+res.data.numero+' guardada');
+}
+
+async function cotBuscar(){
+  var box = document.getElementById('cot-results');
+  box.innerHTML = '<div style="padding:14px;color:#9CA3AF;text-align:center">Buscando...</div>';
+  var res = await cotRpc('cot_buscar', {
+    p_q: (document.getElementById('cot-q').value||'').trim(),
+    p_incluir_vencidas: document.getElementById('cot-vencidas').checked
+  });
+  if(!res || !res.ok){ box.innerHTML = '<div style="padding:14px;color:#DC2626;text-align:center">⚠ '+esc(cotMsgError(res))+'</div>'; return; }
+  COT_CACHE = res.data || [];
+  cotRenderResultados();
+}
+
+function cotRenderResultados(){
+  var box = document.getElementById('cot-results');
+  if(!COT_CACHE.length){ box.innerHTML = '<div style="padding:14px;color:#9CA3AF;text-align:center">No hay cotizaciones vigentes que coincidan</div>'; return; }
+  var ahora = Date.now();
+  box.innerHTML = COT_CACHE.map(function(c){
+    var items = Array.isArray(c.items) ? c.items : [];
+    var vence = new Date(c.vence_at), dias = Math.ceil((vence - ahora)/86400000);
+    var vc = dias < 0 ? 'background:#FEE2E2;color:#991B1B' : (dias <= 7 ? 'background:#FEF3C7;color:#92400E' : 'background:#D1FAE5;color:#065F46');
+    var vt = dias < 0 ? 'Vencida el '+vence.toLocaleDateString('es-AR') : 'Vence '+vence.toLocaleDateString('es-AR')+' ('+dias+' días)';
+    var nro = esc(c.numero);
+    return '<div class="cot-card">'
+      +'<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px">'
+        +'<div><span class="cot-badge">COTIZACIÓN INTERNA</span> &nbsp;<strong style="color:#4C1D95">'+nro+'</strong>'
+        +' &nbsp;<span style="font-size:12px;color:#9CA3AF">'+new Date(c.created_at).toLocaleString('es-AR')+(c.creado_por?' · por '+esc(c.creado_por):'')+'</span></div>'
+        +'<span class="cot-vence" style="'+vc+'">'+vt+'</span>'
+      +'</div>'
+      +'<div style="font-size:13px;color:#374151;margin-bottom:6px">'
+        +(c.canal?'<strong>'+esc(c.canal)+'</strong>':'')
+        +(c.contacto?' &nbsp;|&nbsp; '+esc(c.contacto):'')
+        +(c.chasis?' &nbsp;|&nbsp; Chasis: <span style="font-family:monospace">'+esc(c.chasis)+'</span>':'')
+      +'</div>'
+      +'<table class="cot-tbl" style="margin-bottom:6px"><tbody>'
+        +items.map(function(i){
+          return '<tr><td style="width:120px;font-weight:700;font-family:monospace">'+esc(i.id)+'</td><td>'+esc(i.desc)+'</td>'
+            +'<td style="width:50px;text-align:center">x'+esc(String(i.qty||1))+'</td>'
+            +'<td style="width:110px;text-align:right">'+cotPesos(i.precioTotal)+'</td></tr>';
+        }).join('')
+      +'</tbody></table>'
+      +(c.notas?'<div style="font-size:12px;color:#92400E;background:#FFFBEB;border-radius:6px;padding:6px 8px;margin-bottom:6px;white-space:pre-line">📝 '+esc(c.notas)+'</div>':'')
+      +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'
+        +'<span style="font-size:15px;font-weight:800;color:#4C1D95">Total: '+cotPesos(c.total)+'</span>'
+        +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'
+          +'<select id="cot-ext-'+nro+'" class="pm-filter-sel" style="padding:5px"><option value="1">+1 mes</option><option value="2" selected>+2 meses</option><option value="3">+3 meses</option><option value="6">+6 meses</option></select>'
+          +'<button class="pm-btn pm-btn-secondary" onclick="cotExtender(\''+nro+'\',this)">Extender plazo</button>'
+          +'<button class="pm-btn pm-btn-secondary" onclick="cotCopiarWA(\''+nro+'\')">Copiar para WhatsApp</button>'
+          +'<button class="pm-btn cot-btn" onclick="cotImprimir(\''+nro+'\')">&#128438; PDF</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+async function cotExtender(nro, btn){
+  var meses = parseInt(document.getElementById('cot-ext-'+nro).value,10)||1;
+  btn.disabled = true;
+  var res = await cotRpc('cot_extender', {p_numero: nro, p_meses: meses});
+  btn.disabled = false;
+  if(!res || !res.ok){ pmToast('⚠ '+cotMsgError(res)); return; }
+  COT_CACHE = COT_CACHE.map(function(x){ return x.numero===nro ? res.data : x; });
+  cotRenderResultados();
+  pmToast('✅ '+nro+' extendida hasta el '+new Date(res.data.vence_at).toLocaleDateString('es-AR'));
+}
+
+function cotTextoWA(c){
+  var items = Array.isArray(c.items) ? c.items : [];
+  return 'Repuestos Alta Gama — Cotización '+c.numero+'\n'
+    +(c.chasis?'Chasis: '+c.chasis+'\n':'')+'\n'
+    +items.map(function(i){ return '• '+i.qty+'x '+(i.id?'['+i.id+'] ':'')+(i.desc||'')+' — '+cotPesos(i.precioTotal); }).join('\n')
+    +(c.notas?'\n\nNotas:\n'+String(c.notas).replace(/ \(no está en el catálogo\)/g,''):'')
+    +'\n\nTotal: '+cotPesos(c.total)+' (IVA incluido)\n'
+    +'Válida hasta el '+new Date(c.vence_at).toLocaleDateString('es-AR');
+}
+function cotCopiarWA(nro){
+  var c = COT_CACHE.find(function(x){ return x.numero===nro; });
+  if(!c) return;
+  var txt = cotTextoWA(c);
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){ pmToast('📋 Copiado — pegalo en WhatsApp o en el mail'); }, function(){ prompt('Copiá el texto:', txt); });
+  else prompt('Copiá el texto:', txt);
+}
+
+function cotImprimir(nro){
+  var c = COT_CACHE.find(function(x){ return x.numero===nro; });
+  if(!c) return;
+  var items = Array.isArray(c.items) ? c.items : [];
+  var td = 'border:1px solid #ccc;padding:5px 8px';
+  var filas = items.map(function(i){
+    return '<tr><td style="'+td+';text-align:center">'+esc(i.id)+'</td><td style="'+td+'">'+esc(i.desc)+'</td>'
+      +'<td style="'+td+';text-align:center">'+Number(i.qty||1)+'</td>'
+      +'<td style="'+td+';text-align:right">'+cotPesos(i.precioUnitario)+'</td>'
+      +'<td style="'+td+';text-align:right;font-weight:700">'+cotPesos(i.precioTotal)+'</td></tr>';
+  }).join('');
+  var html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Cotización '+esc(c.numero)+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:20px}table{border-collapse:collapse;width:100%}@media print{.no-print{display:none}}</style></head><body>'
+    +'<div class="no-print" style="text-align:right;margin-bottom:12px"><button onclick="window.print()" style="padding:8px 20px;background:#6D28D9;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700">Imprimir / Guardar PDF</button></div>'
+    +'<table style="border:2px solid #111"><tr>'
+      +'<td style="width:55%;padding:12px 14px;vertical-align:top;border-right:2px solid #111">'
+        +'<div style="font-size:16px;font-weight:900;color:#CC0000">REPUESTOS ALTA GAMA</div>'
+        +'<div style="font-size:10px;color:#555;margin-bottom:6px">de FECHINO JOSE LUIS Y PUYOL EDUARDO E. SH</div>'
+        +'<div style="font-size:10px">Av. Alvarez Thomas 2040 (1430) C.A.B.A.</div>'
+        +'<div style="font-size:10px">Tel.: (011)4554-7000 | WhatsApp: 11-6277-0520</div>'
+        +'<div style="font-size:10px">consultas@repuestosaltagama.com.ar</div>'
+      +'</td><td style="padding:12px 14px;vertical-align:top">'
+        +'<div style="font-size:13px;font-weight:900">COTIZACIÓN Nº: '+esc(c.numero)+'</div>'
+        +'<div style="margin-top:4px">Fecha: '+new Date(c.created_at).toLocaleDateString('es-AR')+'</div>'
+        +'<div style="margin-top:4px"><strong>Válida hasta: '+new Date(c.vence_at).toLocaleDateString('es-AR')+'</strong></div>'
+      +'</td></tr></table>'
+    +'<div style="border:1px solid #111;border-top:none;padding:8px 14px;margin-bottom:12px">'
+      +(c.contacto?'<strong>Cliente:</strong> '+esc(c.contacto)+' &nbsp; ':'')
+      +(c.chasis?'<strong>Chasis:</strong> '+esc(c.chasis):'')
+    +'</div>'
+    +'<table><thead><tr style="background:#f0f0f0"><th style="'+td+'">Código</th><th style="'+td+';text-align:left">Descripción</th><th style="'+td+'">Cant.</th><th style="'+td+';text-align:right">P. Unit.</th><th style="'+td+';text-align:right">Subtotal</th></tr></thead><tbody>'+filas+'</tbody></table>'
+    +'<div style="text-align:right;font-size:14px;font-weight:900;margin-top:10px;padding-top:8px;border-top:2px solid #111">TOTAL: '+cotPesos(c.total)+'</div>'
+    +'<div style="margin-top:6px;font-size:10px;color:#555">Precios con IVA incluido. Cotización sujeta a disponibilidad de stock.</div>'
+    +(c.notas?'<div style="margin-top:8px;white-space:pre-line"><strong>Observaciones:</strong>\n'+esc(String(c.notas).replace(/ \(no está en el catálogo\)/g,''))+'</div>':'')
+    +'</body></html>';
+  var w = window.open('','_blank'); w.document.write(html); w.document.close();
+}
 
 // ── NOTIFICACIONES DE ESTADO AL CLIENTE ───────────────────────────────────
 var NOTIF_ICONS = {
@@ -5052,7 +5610,7 @@ function aplicarVisibilidadAdminPorNivel(nivel, nombre){
   var repBtn = document.getElementById('tab-representantes-btn');
   if(repBtn) repBtn.style.display = (esDueno || esRepresentante) ? '' : 'none';
 
-  ['tab-pedidos-btn','tab-ghconfig-btn'].forEach(function(id){
+  ['tab-pedidos-btn','tab-cotizaciones-btn','tab-ghconfig-btn'].forEach(function(id){
     var el = document.getElementById(id);
     if(el) el.style.display = esRepresentante ? 'none' : '';
   });
@@ -6524,6 +7082,7 @@ function ceGuardarEnArchivoManual(){
         <button class="admin-tab" onclick="adminSwitchTab('tab-clientes',this)">&#128100; Clientes</button>
         <button class="admin-tab" id="tab-representantes-btn" onclick="adminSwitchTab('tab-representantes',this);repRender()">&#129309; Representantes</button>
         <button class="admin-tab" id="tab-pedidos-btn" onclick="adminSwitchTab('tab-pedidos',this);pedRender()">&#128203; Pedidos <span id="ped-badge" style="display:none;background:#CC0000;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
+        <button class="admin-tab" id="tab-cotizaciones-btn" onclick="adminSwitchTab('tab-cotizaciones',this);cotAbrir()">&#129534; Cotizaciones</button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-ingresos',this);ingCargar()">&#128230; Ingreso mercader&iacute;a <span id="ing-badge" style="display:none;background:#EA580C;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px">0</span></button>
         <button class="admin-tab" onclick="adminSwitchTab('tab-catalogo',this);ceInicializar()">&#9999; Editor Cat&aacute;logo</button>
         <button class="admin-tab" id="tab-ghconfig-btn" onclick="adminSwitchTab('tab-ghconfig',this);ghRenderConfig()">&#9881; Configuraci&oacute;n</button>
@@ -6624,6 +7183,7 @@ function ceGuardarEnArchivoManual(){
           <table class="pm-table" id="pm-table">
             <thead><tr>
               <th>C&#243;digo</th><th>Marca</th><th>Descripci&#243;n</th><th>Categor&#237;a</th>
+              <th style="text-align:right">Precio origen</th>
               <th style="text-align:right">Precio (ARS)</th>
             </tr></thead>
             <tbody id="pm-tbody"></tbody>
@@ -6690,6 +7250,33 @@ function ceGuardarEnArchivoManual(){
         </div>
         <div id="ped-list" style="padding:12px;overflow-y:auto;max-height:calc(100vh - 260px)"></div>
       </div><!-- /tab-pedidos -->
+
+      <!-- TAB COTIZACIONES INTERNAS (no son pedidos de clientes) -->
+      <div class="admin-tab-panel" id="tab-cotizaciones">
+        <div class="cot-aviso">&#129534; <strong>Cotizaciones internas</strong> &mdash; las armamos nosotros (WhatsApp / Mail / Mostrador). No son pedidos de clientes y no aparecen en la pesta&ntilde;a Pedidos.</div>
+
+        <div class="cot-box">
+          <div class="cot-box-title">&#128172; Nueva cotizaci&oacute;n</div>
+          <div class="cot-help">Escrib&iacute; como en un chat: <code>whatsapp 8191 WVGCG87P0GD034531 pedido 50006304 $605000 x1 / 2h0698151 textar x1 121000</code><br>
+            Canal (whatsapp / mail / mostrador), tel&eacute;fono o mail, chasis, y despu&eacute;s de <strong>pedido</strong> los art&iacute;culos separados por <strong>/</strong> o en l&iacute;neas distintas. Si no pon&eacute;s precio, se toma el del cat&aacute;logo.<br>
+            <strong>N&ordm; de la marca</strong> solo (<code>2448404 x2</code>) &middot; <strong>N&ordm; original + marca</strong> (<code>2H0698151 textar x2</code>) &middot; cantidad siempre con <strong>x</strong> (<code>x1</code>, <code>x6</code>, <code>x10</code>)</div>
+          <div id="cot-preview"></div>
+          <div class="cot-chatbar">
+            <textarea id="cot-input" rows="2" placeholder="whatsapp 8191 WVGCG87P0GD034531 pedido 50006304 $605000 x1 / 2h0698151 textar x1 121000" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cotInterpretar();}"></textarea>
+            <button class="pm-btn cot-btn" onclick="cotInterpretar()">Interpretar &#10148;</button>
+          </div>
+        </div>
+
+        <div class="cot-box">
+          <div class="cot-box-title">&#128269; Buscar cotizaci&oacute;n</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <input type="text" class="pm-search" id="cot-q" style="flex:1;min-width:220px" placeholder="Tel&eacute;fono (ej. 8191), mail, chasis, N&ordm; COT o c&oacute;digo de art&iacute;culo" onkeydown="if(event.key==='Enter')cotBuscar()">
+            <label style="font-size:12px;color:#6B7280;display:flex;align-items:center;gap:4px"><input type="checkbox" id="cot-vencidas" onchange="cotBuscar()"> Incluir vencidas</label>
+            <button class="pm-btn cot-btn" onclick="cotBuscar()">Buscar</button>
+          </div>
+          <div id="cot-results" style="margin-top:12px"></div>
+        </div>
+      </div><!-- /tab-cotizaciones -->
 
       <!-- TAB INGRESO DE MERCADERÍA -->
       <div class="admin-tab-panel" id="tab-ingresos">
