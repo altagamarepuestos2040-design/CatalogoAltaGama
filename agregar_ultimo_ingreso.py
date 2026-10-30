@@ -31,7 +31,6 @@ REEMPLAZADOS = {  # codigo viejo -> reemplazo (ya esta en el catalogo)
 }
 SIN_DATOS = [
     ('25332', 'Febi', '059115124C', 'Tensor de cadena de distribución'),
-    ('20932605', 'Febi', '83 22 0 397 114 S1', 'Aceite para caja automática (SWAG)'),
     ('105774', 'Febi', '5010359706', 'Filtro de combustible'),
     ('02-37475-02', 'Victor Reinz', '06H198012', 'Juego de juntas de culata'),
 ]
